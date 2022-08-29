@@ -1,0 +1,13 @@
+colorama
+ipdb
+ipykernel
+matplotlib
+numpy
+pandas
+nbresult
+pygeohash
+pytest
+seaborn
+sklearn
+yapf
+tensorflow==2.8.0
