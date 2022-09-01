@@ -10,7 +10,10 @@ pytest
 seaborn
 sklearn
 yapf
-# tensorflow==2.8.0
+pillow
+scipy
+google-cloud-storage
+tensorflow==2.8.0
 jupyter==1.0.0
 jupyter-client==7.1.0
 jupyter-console==6.4.0
