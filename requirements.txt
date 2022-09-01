@@ -13,6 +13,7 @@ yapf
 pillow
 scipy
 google-cloud-storage
+gcsfs
 tensorflow==2.8.0
 jupyter==1.0.0
 jupyter-client==7.1.0
