@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-import os
+# import tensorflow as tf
+# import os
 from scipy import signal
-from PIL import Image
+# from PIL import Image
 import pickle
 import io
 from google.cloud import storage
@@ -12,6 +12,15 @@ from google.cloud import storage
 
 #TODO: enter values to the following variables & create directories TP9,TP10,AF7 & AF8
 BUCKET_NAME = "brain-mnist"
+
+# def gcp_csv_to_df(bucket_name, source_blob_name):
+#     storage_client = storage.Client()
+#     bucket = storage_client.bucket(bucket_name)
+#     blob = bucket.blob(source_blob_name)
+#     data = blob.download_as_string()
+# #    df = pd.read_csv(io.BytesIO(data))
+#     return data
+
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
@@ -91,7 +100,9 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
             try:
                 #Open csv with signal
                 data_csv_source = f"gs://{BUCKET_NAME}/{data_file_in_bucket}"
+                # data = gcp_csv_to_df(BUCKET_NAME, data_file_in_bucket)
                 data_raw_chunk = pd.read_csv(
+                        # io.BytesIO(data),
                         data_csv_source,
                         delimiter=',',
                         header=None,
@@ -107,12 +118,13 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
 
                 #Create or update csv file with filepath column
                 destination_blob_name_csv = f"gs://{BUCKET_NAME}/{csv_path_in_bucket}"
+                # local_csv = 'data/new.csv'
                 new_data_raw.to_csv(destination_blob_name_csv,
                     mode="w" if chunk_id==0 else "a",
                     header=chunk_id == 0,
                     index=False)
 
-                upload_blob(BUCKET_NAME, data_csv_source, destination_blob_name_csv)
+                # upload_blob(BUCKET_NAME, local_csv, destination_blob_name_csv)
 
             #Handling errors
             except pd.errors.EmptyDataError:
@@ -175,14 +187,10 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
 
 
 if __name__ == '__main__':
-    CHUNK_SIZE=5
-    data_file_in_bucket='M2_clean.txt'
-    local_img_path='data/images/'
-    csv_path_in_bucket='M2_path.csv'
-    add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
-                                  data_file_in_bucket,
-                                  local_img_path,
-                                  csv_path_in_bucket,
+    add_arrays_to_pickle_by_chunk(CHUNK_SIZE=5,
+                                  data_file_in_bucket='MU2_clean.txt',
+                                  local_img_path='data/images/',
+                                  csv_path_in_bucket='MU2_path.csv',
                                   chunk_id=0,
                                   chunk_max=2,
                                   to_bucket=True)
