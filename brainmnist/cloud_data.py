@@ -1,4 +1,4 @@
-from package.filtering import notch_filter, butter_bandpass_filter
+from brainmnist.filtering import notch_filter, butter_bandpass_filter
 from skimage.transform import resize
 from google.cloud import storage
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ import numpy as np
 import pickle
 import io
 import os
-import csv
+#import csv
 
 
 # import tensorflow as tf
