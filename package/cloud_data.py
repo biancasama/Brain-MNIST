@@ -1,26 +1,21 @@
+from package.filtering import notch_filter, butter_bandpass_filter
+from skimage.transform import resize
+from google.cloud import storage
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-# import tensorflow as tf
-# import os
 from scipy import signal
-# from PIL import Image
+import pandas as pd
+import numpy as np
 import pickle
 import io
-from google.cloud import storage
+import os
+
+
+# import tensorflow as tf
+# from PIL import Image
 
 
 #TODO: enter values to the following variables & create directories TP9,TP10,AF7 & AF8
 BUCKET_NAME = "brain-mnist"
-
-# def gcp_csv_to_df(bucket_name, source_blob_name):
-#     storage_client = storage.Client()
-#     bucket = storage_client.bucket(bucket_name)
-#     blob = bucket.blob(source_blob_name)
-#     data = blob.download_as_string()
-# #    df = pd.read_csv(io.BytesIO(data))
-#     return data
-
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
@@ -31,14 +26,28 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
 
+def create_single_spectro(X: pd.Series, local_img_path,remove_local=False):
+    """Function to generate a plot & img as np.array from a signal on bucket"""
 
-def create_single_spectro(X: pd.Series, local_img_path):
-    """Plot & save img as np.array."""
-    #create plot
+    #extract signal
     fig = plt.figure(frameon = False, dpi = 120)
     X_spectro = X.iloc[3:]
-    f, t, Sxx = signal.stft(X_spectro.astype('float'))
+
+    #filter signal
+    fs = 256
+    Q = 25
+    w0 = 50
+    lowcut = 14
+    highcut = 71
+    order = 6
+    sample_notch = notch_filter(X_spectro, w0, Q, fs)
+    sample_butter = butter_bandpass_filter(sample_notch, lowcut, highcut, fs, order)
+
+    #create plot
+    f, t, Sxx = signal.stft(sample_butter.astype('float'))
     plt.pcolormesh(t, f, np.abs(Sxx), vmin=0, vmax=2, shading='gouraud')
+
+    #keeping just the image
     ax=plt.gca()
     ax.grid(visible=False)
     plt.box(on=False)
@@ -52,12 +61,22 @@ def create_single_spectro(X: pd.Series, local_img_path):
     io_buf.seek(0)
 
     #Get array from bytes
-    img_arr = np.reshape(np.frombuffer(io_buf.getvalue(), dtype=np.uint8),
+    img_arr = np.reshape(np.frombuffer(io_buf.getvalue(),dtype=np.uint8),
                         newshape=(int(fig.bbox.bounds[3]), int(fig.bbox.bounds[2]), -1))
+
+    #resize array by dividing shape by 3
+    img_arr = img_arr[:,:,:-1]
+    img_arr = resize(img_arr, (img_arr.shape[0]/3,img_arr.shape[1]/3))
+
+    #closing bytes-object and plt
     io_buf.close()
     plt.close()
 
     #Creating a source_file_name that will at first be upload locally the pickle file
+    #alternatives paths TO_BE_VALIDATED to avoid directory creation and simplify removing task
+    #file_name = {X.iloc[0]}_{X.iloc[1]}.pickle'
+    #source_file_name=f'{local_img_path}{file_name}'
+    #destination_file_name=f'{local_img_path}{X.iloc[2]}/{file_name}'
     source_file_name=f'{local_img_path}{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle'
 
     with open(source_file_name, 'wb') as handle:
@@ -68,13 +87,17 @@ def create_single_spectro(X: pd.Series, local_img_path):
 
     upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
 
+    #remove file after usage
+    if remove_local:
+        os.remove(source_file_name)
+
     #Return path of the created img saved as an array to fill the csv file comprising the signal values.
     return destination_blob_name_pickle
 
 
 def add_arrays_to_pickle(X : pd.DataFrame, local_img_path):
+    '''Function to activate the file creation and to fill the column filepath of the signal csv'''
 
-    #Function to activate the file creation and to fill the column filepath of the signal csv
     X['file_path']=X.apply(lambda x:create_single_spectro(x, local_img_path),axis=1)
 
     return X
@@ -86,6 +109,7 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
                                   chunk_id=0,
                                   chunk_max=0,
                                   to_bucket=True):
+    '''From a DataFrame, upload images to bucket chunk by chunk'''
 
     #To save the array into a Google Storage bucket
     if to_bucket:
@@ -138,52 +162,52 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
 
         print(":white_check_mark: data saved entirely")
 
-# #----------------------------------------------------------------------------
-# #----------------------------------------------------------------------------
-#     else :
-#     #By default to save the array locally or in google drive
-#         while (True):
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+    else :
+    #By default to save the array locally or in google drive
+        while (True):
 
-#             #Early stop to avoid mass download
-#             print(f"download chunk n°{chunk_id}...")
-#             if early_stop and chunk_id == chunk_max:
-#                 print(f"download early stopped chunk n°{chunk_id}...")
-#                 return None
+            #Early stop to avoid mass download
+            print(f"download chunk n°{chunk_id}...")
+            if chunk_max and chunk_id == chunk_max:
+                print(f"download early stopped chunk n°{chunk_id}...")
+                return None
 
-#             try:
+            try:
 
-#                 #Open csv with signal
-#                 data_raw_chunk = pd.read_csv(
-#                         data_path,
-#                         delimiter=',',
-#                         header=None,
-#                         skiprows=(chunk_id * CHUNK_SIZE) + 1,
-#                         nrows=CHUNK_SIZE
-#                         )
+                #Open csv with signal
+                data_raw_chunk = pd.read_csv(
+                        data_file_in_bucket,
+                        delimiter=',',
+                        header=None,
+                        skiprows=(chunk_id * CHUNK_SIZE) + 1,
+                        nrows=CHUNK_SIZE
+                        )
 
-#                 #Replace y_true "-1" values into "10" for file naming
-#                 data_raw_chunk = data_raw_chunk.replace({1: -1}, 10)
+                #Replace y_true "-1" values into "10" for file naming
+                data_raw_chunk = data_raw_chunk.replace({1: -1}, 10)
 
-#                 #Save img and create dataframe with filepath column
-#                 new_data_raw = add_arrays_to_pickle(data_raw_chunk, local_img_path)
+                #Save img and create dataframe with filepath column
+                new_data_raw = add_arrays_to_pickle(data_raw_chunk, local_img_path)
 
-#                 #Create or update csv file with filepath column
-#                 new_data_raw.to_csv(csv_path,
-#                     mode="w" if chunk_id==0 else "a",
-#                     header=chunk_id == 0,
-#                     index=False)
+                #Create or update csv file with filepath column
+                new_data_raw.to_csv(csv_path_in_bucket,
+                    mode="w" if chunk_id==0 else "a",
+                    header=chunk_id == 0,
+                    index=False)
 
-#             #Handling errors
-#             except pd.errors.EmptyDataError:
-#                 data_raw_chunk = None
-#             if data_raw_chunk is None:
-#                 break
-#             if len(data_raw_chunk) == 0:
-#                 break
+            #Handling errors
+            except pd.errors.EmptyDataError:
+                data_raw_chunk = None
+            if data_raw_chunk is None:
+                break
+            if len(data_raw_chunk) == 0:
+                break
 
-#             chunk_id += 1
+            chunk_id += 1
 
-#         print(":white_check_mark: data saved entirely")
+        print(":white_check_mark: data saved entirely")
 
 
 if __name__ == '__main__':
