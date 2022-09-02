@@ -66,7 +66,7 @@ def create_single_spectro(X: pd.Series, local_img_path,remove_local=False,img_fo
 
     #resize array by dividing shape by 3 and selecting unit8 as dtype to save space
     img_arr = img_arr[:,:,:-1]
-    img_arr = resize(img_arr, (img_arr.shape[0]/3,img_arr.shape[1]/3))
+    img_arr = resize(img_arr, (img_arr.shape[0]/3,img_arr.shape[1]/3)) * 255
     img_arr = img_arr.astype('uint8')
 
     #closing bytes-object and plt
@@ -84,7 +84,7 @@ def create_single_spectro(X: pd.Series, local_img_path,remove_local=False,img_fo
         np.save(source_file_name, img_arr, allow_pickle=True, fix_imports=True)
 
         #Downloading from source_file_name and uploading to destination_blob_name_pickle
-        destination_blob_name_pickle = f"gs://{BUCKET_NAME}/{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy"
+        destination_blob_name_pickle = f"{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy"
 
         upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
 
