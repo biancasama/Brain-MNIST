@@ -147,6 +147,10 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
             if chunk_max!=0 and chunk_id == chunk_max:
 
                 print(f"download early stopped chunk n°{chunk_id}...")
+                print(":white_check_mark: data saved entirely")
+                upload_blob(BUCKET_NAME, csv_path_in_bucket, destination_blob_name_csv)
+                os.remove(csv_path_in_bucket)
+                print("uploaded csv to bucket")
 
                 return None
 
