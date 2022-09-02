@@ -26,7 +26,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
 
-def create_single_spectro(X: pd.Series, local_img_path,remove_local=False):
+def create_single_spectro(X: pd.Series, local_img_path,remove_local=False,img_format='npy'):
     """Function to generate a plot & img as np.array from a signal on bucket"""
 
     #extract signal
@@ -64,35 +64,61 @@ def create_single_spectro(X: pd.Series, local_img_path,remove_local=False):
     img_arr = np.reshape(np.frombuffer(io_buf.getvalue(),dtype=np.uint8),
                         newshape=(int(fig.bbox.bounds[3]), int(fig.bbox.bounds[2]), -1))
 
-    #resize array by dividing shape by 3
+    #resize array by dividing shape by 3 and selecting unit8 as dtype to save space
     img_arr = img_arr[:,:,:-1]
     img_arr = resize(img_arr, (img_arr.shape[0]/3,img_arr.shape[1]/3))
+    img_arr = img_arr.astype('uint8')
 
     #closing bytes-object and plt
     io_buf.close()
     plt.close()
 
-    #Creating a source_file_name that will at first be upload locally the pickle file
-    #alternatives paths TO_BE_VALIDATED to avoid directory creation and simplify removing task
-    #file_name = {X.iloc[0]}_{X.iloc[1]}.pickle'
-    #source_file_name=f'{local_img_path}{file_name}'
-    #destination_file_name=f'{local_img_path}{X.iloc[2]}/{file_name}'
-    source_file_name=f'{local_img_path}{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle'
+    #Creating a source_file_name that will at first be upload locally the npy file
+    if img_format=='npy':
+        #alternatives paths TO_BE_VALIDATED to avoid directory creation and simplify removing task
+        #file_name = {X.iloc[0]}_{X.iloc[1]}.npy'
+        #source_file_name=f'{local_img_path}{file_name}'
+        #destination_file_name=f'{local_img_path}{X.iloc[2]}/{file_name}'
 
-    with open(source_file_name, 'wb') as handle:
-        pickle.dump(img_arr[:,:,:-1], handle, protocol=pickle.HIGHEST_PROTOCOL)
+        source_file_name=f'{local_img_path}{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy'
+        np.save(source_file_name, img_arr, allow_pickle=True, fix_imports=True)
 
-    #Downloading from source_file_name and uploading to destination_blob_name_pickle
-    destination_blob_name_pickle = f"gs://{BUCKET_NAME}/{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle"
+        #Downloading from source_file_name and uploading to destination_blob_name_pickle
+        destination_blob_name_pickle = f"gs://{BUCKET_NAME}/{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy"
 
-    upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
+        upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
 
-    #remove file after usage
-    if remove_local:
-        os.remove(source_file_name)
+        #remove file after usage
+        if remove_local:
+            os.remove(source_file_name)
 
-    #Return path of the created img saved as an array to fill the csv file comprising the signal values.
-    return destination_blob_name_pickle
+        #Return path of the created img saved as an array to fill the csv file comprising the signal values.
+        return destination_blob_name_pickle
+
+    elif img_format=='pickle':
+        #alternatives paths TO_BE_VALIDATED to avoid directory creation and simplify removing task
+        #file_name = {X.iloc[0]}_{X.iloc[1]}.pickle'
+        #source_file_name=f'{local_img_path}{file_name}'
+        #destination_file_name=f'{local_img_path}{X.iloc[2]}/{file_name}'
+
+        source_file_name=f'{local_img_path}{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle'
+
+        with open(source_file_name, 'wb') as handle:
+            pickle.dump(img_arr[:,:,:-1], handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        #Downloading from source_file_name and uploading to destination_blob_name_pickle
+        destination_blob_name_pickle = f"gs://{BUCKET_NAME}/{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle"
+
+        upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
+
+        #remove file after usage
+        if remove_local:
+            os.remove(source_file_name)
+
+        #Return path of the created img saved as an array to fill the csv file comprising the signal values.
+        return destination_blob_name_pickle
+
+    raise ValueError('Please select correct img_format: npy or pickle')
 
 
 def add_arrays_to_pickle(X : pd.DataFrame, local_img_path):
