@@ -8,6 +8,7 @@ import numpy as np
 import pickle
 import io
 import os
+import csv
 
 
 # import tensorflow as tf
@@ -84,16 +85,16 @@ def create_single_spectro(X: pd.Series, local_img_path,remove_local=False,img_fo
         np.save(source_file_name, img_arr, allow_pickle=True, fix_imports=True)
 
         #Downloading from source_file_name and uploading to destination_blob_name_pickle
-        destination_blob_name_pickle = f"{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy"
+        destination_blob_name_npy = f"{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.npy"
 
-        upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
+        upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_npy)
 
         #remove file after usage
         if remove_local:
             os.remove(source_file_name)
 
         #Return path of the created img saved as an array to fill the csv file comprising the signal values.
-        return destination_blob_name_pickle
+        return destination_blob_name_npy
 
     elif img_format=='pickle':
         #alternatives paths TO_BE_VALIDATED to avoid directory creation and simplify removing task
@@ -107,7 +108,7 @@ def create_single_spectro(X: pd.Series, local_img_path,remove_local=False,img_fo
             pickle.dump(img_arr[:,:,:-1], handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         #Downloading from source_file_name and uploading to destination_blob_name_pickle
-        destination_blob_name_pickle = f"gs://{BUCKET_NAME}/{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle"
+        destination_blob_name_pickle = f"{X.iloc[2]}/{X.iloc[0]}_{X.iloc[1]}.pickle"
 
         upload_blob(BUCKET_NAME, source_file_name, destination_blob_name_pickle)
 
@@ -144,15 +145,16 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
             #Early stop to avoid mass download
             print(f"download chunk n°{chunk_id}...")
             if chunk_max!=0 and chunk_id == chunk_max:
+
                 print(f"download early stopped chunk n°{chunk_id}...")
+
                 return None
 
             try:
                 #Open csv with signal
                 data_csv_source = f"gs://{BUCKET_NAME}/{data_file_in_bucket}"
-                # data = gcp_csv_to_df(BUCKET_NAME, data_file_in_bucket)
+
                 data_raw_chunk = pd.read_csv(
-                        # io.BytesIO(data),
                         data_csv_source,
                         delimiter=',',
                         header=None,
@@ -168,11 +170,20 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
 
                 #Create or update csv file with filepath column
                 destination_blob_name_csv = f"gs://{BUCKET_NAME}/{csv_path_in_bucket}"
+
+                #TRY_ME:
+                with open(destination_blob_name_csv, "w" if chunk_id==0 else "a") as f:
+                    writer = csv.writer(f)
+                    if chunk_id==0: writer.writerow(new_data_raw.columns)
+                    for i,row in new_data_raw.iterrows():
+                        writer.writerow(row)
+
+
                 # local_csv = 'data/new.csv'
-                new_data_raw.to_csv(destination_blob_name_csv,
-                    mode="w" if chunk_id==0 else "a",
-                    header=chunk_id == 0,
-                    index=False)
+                # new_data_raw.to_csv(destination_blob_name_csv,
+                #     mode="w" if chunk_id==0 else "a",
+                #     header=chunk_id == 0,
+                #     index=False)
 
                 # upload_blob(BUCKET_NAME, local_csv, destination_blob_name_csv)
 
