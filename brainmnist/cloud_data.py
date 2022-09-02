@@ -171,21 +171,10 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
                 #Create or update csv file with filepath column
                 destination_blob_name_csv = f"gs://{BUCKET_NAME}/{csv_path_in_bucket}"
 
-                #TRY_ME:
-                with open(destination_blob_name_csv, "w" if chunk_id==0 else "a") as f:
-                    writer = csv.writer(f)
-                    if chunk_id==0: writer.writerow(new_data_raw.columns)
-                    for i,row in new_data_raw.iterrows():
-                        writer.writerow(row)
-
-
-                # local_csv = 'data/new.csv'
-                # new_data_raw.to_csv(destination_blob_name_csv,
-                #     mode="w" if chunk_id==0 else "a",
-                #     header=chunk_id == 0,
-                #     index=False)
-
-                # upload_blob(BUCKET_NAME, local_csv, destination_blob_name_csv)
+                new_data_raw.to_csv(csv_path_in_bucket,
+                    mode="w" if chunk_id==0 else "a",
+                    header=chunk_id == 0,
+                    index=False)
 
             #Handling errors
             except pd.errors.EmptyDataError:
@@ -198,7 +187,9 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
             chunk_id += 1
 
         print(":white_check_mark: data saved entirely")
-
+        upload_blob(BUCKET_NAME, csv_path_in_bucket, destination_blob_name_csv)
+        os.remove(csv_path_in_bucket)
+        print("uploaded csv to bucket")
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
     else :
