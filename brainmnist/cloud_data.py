@@ -148,7 +148,7 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
 
                 print(f"download early stopped chunk n°{chunk_id}...")
                 print(":white_check_mark: data saved entirely")
-                upload_blob(BUCKET_NAME, csv_path_in_bucket, destination_blob_name_csv)
+                upload_blob(BUCKET_NAME, csv_path_in_bucket, csv_path_in_bucket)
                 os.remove(csv_path_in_bucket)
                 print("uploaded csv to bucket")
 
@@ -173,7 +173,6 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
                 new_data_raw = add_arrays_to_pickle(data_raw_chunk,local_img_path)
 
                 #Create or update csv file with filepath column
-                destination_blob_name_csv = f"gs://{BUCKET_NAME}/{csv_path_in_bucket}"
 
                 new_data_raw.to_csv(csv_path_in_bucket,
                     mode="w" if chunk_id==0 else "a",
@@ -191,7 +190,7 @@ def add_arrays_to_pickle_by_chunk(CHUNK_SIZE,
             chunk_id += 1
 
         print(":white_check_mark: data saved entirely")
-        upload_blob(BUCKET_NAME, csv_path_in_bucket, destination_blob_name_csv)
+        upload_blob(BUCKET_NAME, csv_path_in_bucket, csv_path_in_bucket)
         os.remove(csv_path_in_bucket)
         print("uploaded csv to bucket")
 #----------------------------------------------------------------------------
