@@ -7,6 +7,8 @@ from tensorflow.keras.layers import Dense, SimpleRNN, Flatten, LSTM, Masking, GR
 from tensorflow.keras.callbacks import EarlyStopping
 #sklearn
 from sklearn.model_selection import train_test_split
+#environnement
+import os
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 
@@ -55,12 +57,12 @@ def compile_model_RNN_4C(model):
 
 def train_model_RNN_4C(model, X_train, y_train):
 
-    es = EarlyStopping(patience=2, restore_best_weights=True)
+    es = EarlyStopping(patience=5, restore_best_weights=True)
 
     history = model.fit(X_train, y_train,
                         validation_split=0.2,
-                        batch_size=64,
-                        epochs=500,
+                        batch_size=256,
+                        epochs=1,
                         callbacks=[es],
                         shuffle=True,
                         verbose=1)
@@ -73,5 +75,6 @@ if __name__=='__main__':
     model = initialize_model_RNN_4C()
     model = compile_model_RNN_4C(model)
     history, model = train_model_RNN_4C(model, X_train, y_train)
-    print(model.summary)
-    print(len(history))
+
+    os.makedirs('results/model1', exist_ok=True)
+    model.summary.to_csv('results/model1/summary')
