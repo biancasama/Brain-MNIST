@@ -123,7 +123,7 @@ if __name__=='__main__':
     print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
+    #df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
     print(df.shape)
 
     df = balance_data(df)
