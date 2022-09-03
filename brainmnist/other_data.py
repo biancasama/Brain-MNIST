@@ -120,7 +120,7 @@ if __name__=='__main__':
     # print(df.head())
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean2.csv", sep='\t', header=None)
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean2.csv", sep='\t')
     df = balance_data(df)
     X, y = map_other_data_array3D(df)
     print(X.shape)
