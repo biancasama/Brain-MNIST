@@ -110,9 +110,9 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     y = np.array(y_list)
     del X_list, y_list
 
-    BUCKET_NAME = "brain-mnist"
-    np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_X.npy", X)
-    np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_y.npy", y)
+    # BUCKET_NAME = "brain-mnist"
+    # np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_X.npy", X)
+    # np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_y.npy", y)
 
     return X, y
 
@@ -127,7 +127,7 @@ if __name__=='__main__':
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
     print(df.head())
-    #df = balance_data(df)
+    df = balance_data(df)
     print(df.head())
     print(df.shape)
     X, y = map_other_data_array3D(df)
