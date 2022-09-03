@@ -78,9 +78,10 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv', header=True)
+    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv', index=False)
 
     return data
+
 
 
 def map_other_data_array3D(df: pd.DataFrame) -> tuple:
@@ -123,7 +124,7 @@ if __name__=='__main__':
     print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
-    #df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
     print(df.shape)
 
     df = balance_data(df)
