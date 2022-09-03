@@ -99,7 +99,7 @@ def train_model_RNN_4C(model, X_train, y_train):
 
     # model params
     batch_size = 32
-    patience = 10
+    patience = 3
     epochs = 200
 
     es = EarlyStopping(monitor="val_loss",
