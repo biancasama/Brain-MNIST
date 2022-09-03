@@ -78,7 +78,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean2.csv', index=False, header=True)
+    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv', index=False, header=True)
 
     return data
 
@@ -106,14 +106,14 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
 
 
-    X = np.array(X_list,dtype=object) #specify dtype=object to allow different nb of length of sequences
+    X = np.array(X_list,dtype=object) #specify dtype=object to allow different lengths of sequences
     y = np.array(y_list)
     del X_list, y_list
 
-    #save in bucket
-    BUCKET_NAME = "brain-mnist"
-    X.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_X.csv')
-    y.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_y.csv')
+    # #save in bucket
+    # BUCKET_NAME = "brain-mnist"
+    # X.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_X.csv')
+    # y.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_y.csv')
 
     return X, y
 
@@ -126,7 +126,7 @@ if __name__=='__main__':
     # print(df.head())
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean2.csv", sep=',')
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
     print(df.head())
     df = balance_data(df)
     X, y = map_other_data_array3D(df)
