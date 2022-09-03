@@ -2,13 +2,13 @@ import pandas as pd
 
 def load_data() -> pd.DataFrame:
     """
-    load data from txt format in local
+    load data from txt format
     """
     data = pd.read_csv('drive/MyDrive/Brain/data/MU2.txt', sep=',', header=None)
     return data
 
 
-def map_data(data):
+def map_data(data: pd.DataFrame) -> pd.DataFrame:
     """
     map data in relevant format:
     keep event_index, true_digit, channel & EEG signal
@@ -65,3 +65,22 @@ def map_data(data):
     df = df.reindex(columns=column_names)
 
     return df
+
+
+def balance_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    balance data acoording to the less represented digit
+    """
+
+    #number of representations of the digit the less represented for each electrode (TP9 is chosen arbitrarily, no impact)
+    min_count_digits = df[df.channel=='TP9'].groupby('true_digit').count().iloc[:,0].min()
+
+    df_concat = pd.DataFrame()
+    #sample min_count_digits different index_event for true_digit from -1 to 9
+    for i in range(-1,10):
+    events_of_digit = df[df.channel=='TP9'][df[df.channel=='TP9'].true_digit==i]['index_event'] #identify all events related to the true_digit considered
+    sample_events_of_digit = events_of_digit.sample(min_count_digits,replace=False).tolist() #sample min_count_digits events among all events related to true_digit considered
+    df_sample_digit = df[df.index_event.isin(sample_events_of_digit)] #keep only events that were sampled for the digit
+    df_concat = pd.concat([df_concat, df_sample_digit]) #concatenate events that were sampled for all  digits
+
+    return df_concat
