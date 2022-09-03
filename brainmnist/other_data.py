@@ -118,9 +118,9 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
 
 if __name__=='__main__':
-    # df = load_other_data()
-    # df = map_other_data(df)
-    # print(df.shape)
+    df = load_other_data()
+    df = map_other_data(df)
+    print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
