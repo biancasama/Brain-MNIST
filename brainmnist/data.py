@@ -124,7 +124,7 @@ def map_data_array3D(df: pd.DataFrame) -> tuple:
 
     for i in range(len(df.index_event.unique())):
 
-        #extract eeg data (of 4 channels) related to a specific index_event a put then in ilst of list format
+        #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
         eeg_index_event = df[df.index_event==df.index_event.unique()[i]].drop(columns=['index_event','true_digit','channel']).T.values.tolist()
         #concatenate eeg data coming from all events
         X_list.append(eeg_index_event)
@@ -138,12 +138,3 @@ def map_data_array3D(df: pd.DataFrame) -> tuple:
     del X_list, y_list
 
     return X, y
-
-
-
-if __name__=='__main__':
-    df = load_clean_data_from_bucket()
-    df = balance_data(df)
-    X, y = map_data_array3D(df)
-    print(X.shape)
-    print(y.shape)
