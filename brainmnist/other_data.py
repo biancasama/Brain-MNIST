@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from data import balance_data, map_data_array3D
+from data import balance_data
 
 
 def load_other_data() -> pd.DataFrame:
@@ -114,14 +114,14 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
 
 if __name__=='__main__':
-    df = load_other_data()
-    df = map_other_data(df)
-    print(df.shape)
-    print(df.head())
+    # df = load_other_data()
+    # df = map_other_data(df)
+    # print(df.shape)
+    # print(df.head())
 
-    # BUCKET_NAME = "brain-mnist"
-    # df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.txt", sep='\t', header=None)
-    # df = balance_data(df)
-    # X, y = map_data_array3D(df)
-    # print(X.shape)
-    # print(y.shape)
+    BUCKET_NAME = "brain-mnist"
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean2.txt", sep='\t', header=None)
+    df = balance_data(df)
+    X, y = map_other_data_array3D(df)
+    print(X.shape)
+    print(y.shape)
