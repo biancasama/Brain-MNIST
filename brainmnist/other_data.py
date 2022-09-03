@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from data import balance_data, map_data_array3D
 
 
 def load_other_data() -> pd.DataFrame:
@@ -17,20 +18,34 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     keep event_index, true_digit, channel & EEG signal
     """
 
-    min_data_points = data.iloc[:,5].min()
-    # max_data_points = data.iloc[:,5].max()
+    # min_data_points = data.iloc[:,5].min()
+    max_data_points = data.iloc[:,5].max()
 
     data = data.drop(columns=[0,2,5]) #drop useless columns
 
     data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
     data = data.reindex(columns=['index_event', 'true_digit', 'channel', 'eeg']) #reorder columns
 
-    # data = data.sort_values(by='index_event').iloc[:40,:]
+    data = data.sort_values(by='index_event').iloc[:40,:]
+
+    #function to take into account different number of data point for each event
+    def func_apply(x):
+        try:
+            return int(x.str.split(',').iloc[0][i])
+
+        except IndexError:
+            return np.nan
+
     #dispatch eeg signals in multiple columns
-    for i in range(min_data_points):
-        data = pd.concat([data, pd.DataFrame(data.iloc[:,3]).apply(lambda x: int(x.str.split(',').iloc[0][i]), axis=1)], axis=1)
+    for i in range(max_data_points):
+        print(f'Data point {i} out of {max_data_points}') #print advancement as long command...
+        data = pd.concat([data, pd.DataFrame(data.iloc[:,3]).apply(func_apply, axis=1)], axis=1)
         data.columns = list(data.columns[:-1]) + [i]
     data = data.drop(columns='eeg')
+
+    #save in bucket
+    BUCKET_NAME = "brain-mnist"
+    data.to_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.txt")
 
     return data
 
@@ -39,9 +54,12 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 if __name__=='__main__':
     df = load_other_data()
     df = map_other_data(df)
+    print(df.shape)
+    print(df.head())
+
+    # BUCKET_NAME = "brain-mnist"
+    # df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.txt", sep='\t', header=None)
     # df = balance_data(df)
     # X, y = map_data_array3D(df)
     # print(X.shape)
     # print(y.shape)
-    print(df.shape)
-    print(df.head())
