@@ -9,13 +9,15 @@ from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 #numpy
 import numpy as np
+#pandas
+import pandas as pd
 #environnement
 import os
 #mlflow
 import mlflow
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
-
+from other_data import map_other_data_array3D
 
 
 def prepare_for_RNN_4C():
@@ -36,13 +38,31 @@ def prepare_for_RNN_4C():
 
 
 
+def prepare_for_RNN_4C_otherData():
+
+    BUCKET_NAME = "brain-mnist"
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
+
+    df = balance_data(df)
+    X, y = map_other_data_array3D(df)
+
+    y_copy = y.copy()
+    y_copy[y_copy==-1]=10
+    y_cat = to_categorical(y_copy)
+    y_cat.shape
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y_cat, test_size=0.2)
+
+    return X_train, X_test, y_train, y_test
+
+
+
 def initialize_model_RNN_4C():
 
     model = Sequential()
 
     model.add(LSTM(units=256, activation='tanh',return_sequences=True, input_shape=(512,4)))
-    # model.add(LSTM(units=150, activation='tanh'))
-    model.add(Flatten())
+    model.add(LSTM(units=150, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
     layers.Dropout(0.2)
