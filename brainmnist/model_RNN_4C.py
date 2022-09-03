@@ -95,7 +95,7 @@ def save_model_RNN_4C(model: Model = None,
 def train_model_RNN_4C(model, X_train, y_train):
 
     # model params
-    batch_size = 256
+    batch_size = 2000
     patience = 2
     epochs = 1
 
@@ -114,7 +114,7 @@ def train_model_RNN_4C(model, X_train, y_train):
 
     params = dict(
         # model parameters
-        val_train=np.min(history.history['val_train']),
+        train_accuracy=np.min(history.history['accuracy']),
         val_accuracy=np.min(history.history['val_accuracy']),
         batch_size=batch_size,
         patience=patience,
