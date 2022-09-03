@@ -35,7 +35,7 @@ def initialize_model_RNN_4C():
 
     model.add(layers.Masking(mask_value=-1, input_shape=(512,4)))
 
-    model.add(LSTM(units=50, activation='tanh',return_sequences=True))
+    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
     model.add(LSTM(units=50, activation='tanh',return_sequences=True))
     model.add(LSTM(units=20, activation='tanh'))
 
@@ -61,8 +61,8 @@ def train_model_RNN_4C(model, X_train, y_train):
 
     history = model.fit(X_train, y_train,
                         validation_split=0.2,
-                        batch_size=256,
-                        epochs=1,
+                        batch_size=128,
+                        epochs=500,
                         callbacks=[es],
                         shuffle=True,
                         verbose=1)
@@ -76,5 +76,5 @@ if __name__=='__main__':
     model = compile_model_RNN_4C(model)
     history, model = train_model_RNN_4C(model, X_train, y_train)
 
-    os.makedirs('results/model1', exist_ok=True)
-    model.summary.to_csv('results/model1/summary')
+    # os.makedirs('results/model1', exist_ok=True)
+    # model.summary.to_csv('results/model1/summary')
