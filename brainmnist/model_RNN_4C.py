@@ -39,7 +39,8 @@ def initialize_model_RNN_4C():
     model = Sequential()
 
     model.add(LSTM(units=256, activation='tanh',return_sequences=True, input_shape=(512,4)))
-    model.add(LSTM(units=150, activation='tanh'))
+    # model.add(LSTM(units=150, activation='tanh'))
+    model.add(Flatten())
 
     model.add(layers.Dense(50, activation="relu"))
     layers.Dropout(0.2)
