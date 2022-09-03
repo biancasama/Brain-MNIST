@@ -27,7 +27,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
     data = data.sort_values(by='index_event').iloc[:40,:]
     #dispatch eeg signals in multiple columns
-    for i in range(max_data_points):
+    for i in range(min_data_points):
         data = pd.concat([data, pd.DataFrame(data.iloc[:,3]).apply(lambda x: int(x.str.split(',').iloc[0][i]), axis=1)], axis=1)
         data.columns = list(data.columns[:-1]) + [i]
     data = data.drop(columns='eeg')
