@@ -38,14 +38,21 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
     #dispatch eeg signals in multiple columns
     for i in range(max_data_points):
-        print(f'Data point {i} out of {max_data_points}') #print advancement as long command...
-        data = pd.concat([data, pd.DataFrame(data.iloc[:,3]).apply(func_apply, axis=1)], axis=1)
+
+        #print advancement as long command...
+        if i%100==0: print(f'Data point {i+1} out of {max_data_points}')
+
+        #select i-th data point in eeg signal and put it in a new column
+        point_i_eeg = pd.DataFrame(data.iloc[:,3]).apply(func_apply, axis=1)
+        data = pd.concat([data, point_i_eeg], axis=1)
         data.columns = list(data.columns[:-1]) + [i]
+
+    #drop former eeg signal
     data = data.drop(columns='eeg')
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    data.to_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.txt")
+    data.to_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
 
     return data
 
