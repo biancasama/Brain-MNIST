@@ -64,9 +64,6 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     keep event_index, true_digit, channel & EEG signal
     """
 
-    # min_data_points = data.iloc[:,5].min()
-    max_data_points = data.iloc[:,5].max()
-
     data = data.drop(columns=[0,2,5]) #drop useless columns
 
     data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
@@ -99,12 +96,13 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
         #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
         eeg_index_event = df[df.index_event==df.index_event.unique()[i]].drop(columns=['index_event','true_digit','channel']).values.tolist()
-        eeg_index_event_manip = np.array([e[0] for e in [el for el in eeg_index_event]]).T
+        eeg_index_event_manip = np.array([e[0] for e in [el for el in eeg_index_event]]).T.tolist()
         #concatenate eeg data coming from all events
         X_list.append(eeg_index_event_manip)
 
         #extract y data related to a specific index_event & concatenate them
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
+
 
     X = np.array(X_list,dtype=object) #specify dtype=object to allow different nb of length of sequences
     y = np.array(y_list)
@@ -119,17 +117,17 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
 
 if __name__=='__main__':
-    df = load_other_data()
-    df = map_other_data(df)
-    print(df.shape)
-    print(df.head())
+    # df = load_other_data()
+    # df = map_other_data(df)
+    # print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv", sep=',')
-    print(df.head())
-    df = balance_data(df)
-    print(df.head())
     print(df.shape)
+
+    df = balance_data(df)
+    print(df.shape)
+
     X, y = map_other_data_array3D(df)
     print(X.shape)
     print(len(X), len(X[0]), len(X[0][0]))
