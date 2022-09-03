@@ -20,6 +20,7 @@ from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 def prepare_for_RNN_4C():
 
     df = load_clean_data_from_bucket()
+    df = df.iloc[:20000,:]
     df = balance_data(df)
     X, y = map_data_array3D(df)
 
@@ -37,9 +38,7 @@ def initialize_model_RNN_4C():
 
     model = Sequential()
 
-    model.add(layers.Masking(mask_value=-1, input_shape=(512,4)))
-
-    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
+    model.add(LSTM(units=256, activation='tanh',return_sequences=True, input_shape=(512,4)))
     model.add(LSTM(units=256, activation='tanh',return_sequences=True))
     model.add(LSTM(units=50, activation='tanh'))
 
