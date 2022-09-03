@@ -122,7 +122,8 @@ def train_model_RNN_4C(model, X_train, y_train):
         val_accuracy=np.min(history.history['val_accuracy']),
         batch_size=batch_size,
         patience=patience,
-        epochs=epochs
+        epochs=epochs,
+        summary=model.summary()
     )
 
     # save model
