@@ -17,8 +17,8 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     keep event_index, true_digit, channel & EEG signal
     """
 
-    # min_data_points = data.iloc[:,5].min()
-    max_data_points = data.iloc[:,5].max()
+    min_data_points = data.iloc[:,5].min()
+    # max_data_points = data.iloc[:,5].max()
 
     data = data.drop(columns=[0,2,5]) #drop useless columns
 
