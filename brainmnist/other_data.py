@@ -78,7 +78,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv')
+    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv', index=False)
 
     return data
 
@@ -122,10 +122,14 @@ if __name__=='__main__':
     df = load_other_data()
     df = map_other_data(df)
     print(df.shape)
+    print(df.head())
+    print(df[df.index_event==df.index_event.unique()[0]])
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
     print(df.shape)
+    print(df.head())
+    print(df[df.index_event==df.index_event.unique()[0]])
 
     df = balance_data(df)
     print(df.shape)
