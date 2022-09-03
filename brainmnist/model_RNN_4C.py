@@ -103,7 +103,10 @@ def train_model_RNN_4C(model, X_train, y_train):
     patience = 10
     epochs = 200
 
-    es = EarlyStopping(patience=patience, restore_best_weights=True)
+    es = EarlyStopping(monitor="val_loss",
+                       patience=patience,
+                       restore_best_weights=True,
+                       verbose=0)
 
     history = model.fit(X_train, y_train,
                         validation_split=0.2,
@@ -151,10 +154,10 @@ def load_model() -> Model:
 
 
 if __name__=='__main__':
-    # X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
-    # model = initialize_model_RNN_4C()
-    # model = compile_model_RNN_4C(model)
-    # train_model_RNN_4C(model, X_train, y_train)
+    X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
+    model = initialize_model_RNN_4C()
+    model = compile_model_RNN_4C(model)
+    train_model_RNN_4C(model, X_train, y_train)
 
-    model = load_model()
-    model.summary()
+    # model = load_model()
+    # model.summary()
