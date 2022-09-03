@@ -37,8 +37,8 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
 if __name__=='__main__':
     df = load_other_data()
-    print(df.shape)
-    # df = map_other_data(df)
+    df = df.sort_values(by='index_event').iloc[:20000,:]
+    df = map_other_data(df)
     # df = balance_data(df)
     # X, y = map_data_array3D(df)
     # print(X.shape)
