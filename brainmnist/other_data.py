@@ -26,7 +26,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
     data = data.reindex(columns=['index_event', 'true_digit', 'channel', 'eeg']) #reorder columns
 
-    data = data.sort_values(by='index_event').iloc[:40,:]
+    # data = data.sort_values(by='index_event').iloc[:40,:]
 
     #function to take into account different number of data point for each event
     def func_apply(x):
@@ -39,7 +39,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     #dispatch eeg signals in multiple columns
     for i in range(max_data_points):
 
-        #print advancement as long command...
+        #print advancement as long command to run...
         if i%100==0: print(f'Data point {i+1} out of {max_data_points}')
 
         #select i-th data point in eeg signal and put it in a new column
