@@ -57,12 +57,14 @@ def load_other_data() -> pd.DataFrame:
 #     return data
 
 
-
 def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     """
     map other data in relevant format:
     keep event_index, true_digit, channel & EEG signal
     """
+
+    # min_data_points = data.iloc[:,5].min()
+    max_data_points = data.iloc[:,5].max()
 
     data = data.drop(columns=[0,2,5]) #drop useless columns
 
@@ -79,7 +81,6 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean.csv', index=False, header=True)
 
     return data
-
 
 
 def map_other_data_array3D(df: pd.DataFrame) -> tuple:
