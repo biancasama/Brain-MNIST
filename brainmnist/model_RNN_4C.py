@@ -39,9 +39,9 @@ def initialize_model_RNN_4C():
 
     model.add(layers.Masking(mask_value=-1, input_shape=(512,4)))
 
-    model.add(LSTM(units=20, activation='tanh',return_sequences=True))
-    model.add(LSTM(units=50, activation='tanh',return_sequences=True))
-    model.add(LSTM(units=20, activation='tanh'))
+    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
+    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
+    model.add(LSTM(units=50, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
     layers.Dropout(0.2)
@@ -99,9 +99,9 @@ def save_model_RNN_4C(model: Model = None,
 def train_model_RNN_4C(model, X_train, y_train):
 
     # model params
-    batch_size = 2000
-    patience = 2
-    epochs = 1
+    batch_size = 32
+    patience = 10
+    epochs = 200
 
     es = EarlyStopping(patience=patience, restore_best_weights=True)
 
@@ -122,8 +122,7 @@ def train_model_RNN_4C(model, X_train, y_train):
         val_accuracy=np.min(history.history['val_accuracy']),
         batch_size=batch_size,
         patience=patience,
-        epochs=epochs,
-        summary=model.summary()
+        epochs=epochs
     )
 
     # save model
@@ -135,7 +134,7 @@ def train_model_RNN_4C(model, X_train, y_train):
 
 def load_model() -> Model:
     """
-    load the latest saved model, return None if no model found
+    load a saved model, return None if no model found
     """
     # stage = "Production"
 
