@@ -20,7 +20,7 @@ from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 def prepare_for_RNN_4C():
 
     df = load_clean_data_from_bucket()
-    df = df.iloc[:20000,:]
+    df = df.sort_values(by='index_event').iloc[:20000,:]
     df = balance_data(df)
     X, y = map_data_array3D(df)
 
