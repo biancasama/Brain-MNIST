@@ -132,12 +132,30 @@ def train_model_RNN_4C(model, X_train, y_train):
     return val_accuracy
 
 
-if __name__=='__main__':
-    X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
-    model = initialize_model_RNN_4C()
-    model = compile_model_RNN_4C(model)
-    train_model_RNN_4C(model, X_train, y_train)
-    print(X_train.shape)
 
-    # os.makedirs('results/model1', exist_ok=True)
-    # model.summary.to_csv('results/model1/summary')
+def load_model() -> Model:
+    """
+    load the latest saved model, return None if no model found
+    """
+    # stage = "Production"
+
+    # load model from mlflow
+    mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
+    mlflow_model_name = 'mnist_fla66'
+
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    model_uri = f"models:/{mlflow_model_name}/1"
+
+    model = mlflow.keras.load_model(model_uri=model_uri)
+
+    return model
+
+
+if __name__=='__main__':
+    # X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
+    # model = initialize_model_RNN_4C()
+    # model = compile_model_RNN_4C(model)
+    # train_model_RNN_4C(model, X_train, y_train)
+
+    model = load_model()
+    model.summary()
