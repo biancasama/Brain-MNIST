@@ -20,7 +20,7 @@ from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 def prepare_for_RNN_4C():
 
     df = load_clean_data_from_bucket()
-    df = df.sort_values(by='index_event').iloc[:20000,:]
+    #df = df.sort_values(by='index_event').iloc[:20000,:]
     df = balance_data(df)
     X, y = map_data_array3D(df)
 
@@ -39,8 +39,7 @@ def initialize_model_RNN_4C():
     model = Sequential()
 
     model.add(LSTM(units=256, activation='tanh',return_sequences=True, input_shape=(512,4)))
-    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
-    model.add(LSTM(units=50, activation='tanh'))
+    model.add(LSTM(units=150, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
     layers.Dropout(0.2)
@@ -98,8 +97,8 @@ def save_model_RNN_4C(model: Model = None,
 def train_model_RNN_4C(model, X_train, y_train):
 
     # model params
-    batch_size = 32
-    patience = 3
+    batch_size = 512
+    patience = 5
     epochs = 200
 
     es = EarlyStopping(monitor="val_loss",
