@@ -144,5 +144,6 @@ def map_data_array3D(df: pd.DataFrame) -> tuple:
 if __name__=='__main__':
     df = load_clean_data_from_bucket()
     df = balance_data(df)
-    print(df.shape)
--
+    X, y = map_data_array3D(df)
+    print(X.shape)
+    print(y.shape)
