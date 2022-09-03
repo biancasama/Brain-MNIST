@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def load_data() -> pd.DataFrame:
@@ -112,7 +113,36 @@ def balance_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
+def map_data_array3D(df: pd.DataFrame) -> tuple:
+    """
+    Map data in a 3-dimensional array (nb_seq,nb_obs,n_features)=(nb_seq,512,4)
+    nb_seq depend on the data used as input (full dataset or balanced dataset)
+    """
+
+    X_list=[]
+    y_list=[]
+
+    for i in range(len(df.index_event.unique())):
+
+        #extract eeg data (of 4 channels) related to a specific index_event a put then in ilst of list format
+        eeg_index_event = df[df.index_event==df.index_event.unique()[i]].drop(columns=['index_event','true_digit','channel']).T.values.tolist()
+        #concatenate eeg data coming from all events
+        X_list.append(eeg_index_event)
+
+        #extract y data related to a specific index_event & concatenate them
+        y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
+
+
+    X = np.array(X_list)
+    y = np.array(y_list)
+    del X_list, y_list
+
+    return X, y
+
+
+
 if __name__=='__main__':
     df = load_clean_data_from_bucket()
     df = balance_data(df)
     print(df.shape)
+-
