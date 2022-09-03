@@ -83,6 +83,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+
 def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     """
     Map other data in a 3-dimensional array (nb_seq,nb_obs,n_features)=(nb_seq,xx,4)
@@ -109,6 +110,11 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     y = np.array(y_list)
     del X_list, y_list
 
+    #save in bucket
+    BUCKET_NAME = "brain-mnist"
+    X.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_X.csv')
+    y.to_csv(f'gs://{BUCKET_NAME}/other_datasets/MU_clean_y.csv')
+
     return X, y
 
 
@@ -124,5 +130,8 @@ if __name__=='__main__':
     print(df.head())
     df = balance_data(df)
     X, y = map_other_data_array3D(df)
+    print(df.head())
     print(X.shape)
+    print(len(X), len(X[0]), len(X[0][0]))
+    print(len(X), len(X[1]), len(X[0][0]))
     print(y.shape)

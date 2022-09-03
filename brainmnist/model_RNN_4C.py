@@ -17,6 +17,7 @@ import mlflow
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 
 
+
 def prepare_for_RNN_4C():
 
     df = load_clean_data_from_bucket()
@@ -34,6 +35,7 @@ def prepare_for_RNN_4C():
     return X_train, X_test, y_train, y_test
 
 
+
 def initialize_model_RNN_4C():
 
     model = Sequential()
@@ -47,6 +49,7 @@ def initialize_model_RNN_4C():
     model.add(layers.Dense(11, activation="softmax"))
 
     return model
+
 
 
 def compile_model_RNN_4C(model):
