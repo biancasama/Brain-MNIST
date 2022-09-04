@@ -49,7 +49,7 @@ def initialize_model_RNN_4C_otherData():
 
     model = Sequential()
 
-    model.add(layers.Masking(mask_value=-1000, input_shape=(512,4)))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(612,4)))
 
     model.add(LSTM(units=256, activation='tanh',return_sequences=True))
     model.add(LSTM(units=150, activation='tanh'))
