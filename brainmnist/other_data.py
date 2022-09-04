@@ -101,7 +101,8 @@ if __name__=='__main__':
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
-    print(df.shape)    print(df.head())
+    print(df.shape)
+    print(df.head())
 
 
     df = balance_data(df)
