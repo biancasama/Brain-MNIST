@@ -176,10 +176,10 @@ def map_data_FT_array4D(df: pd.DataFrame) -> tuple:
 
     ##save X and y as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    np.save(f'data/MU2_clean_X_FT.npy', X, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'data/MU2_clean_y_FT.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, f'data/MU2_clean_X_FT.npy', f"other_datasets/MU2_clean_X_FT.npy")
-    upload_blob(BUCKET_NAME, f'data/MU2_clean_y_FT.npy', f"other_datasets/MU2_clean_y_FT.npy")
+    np.save('data/MU2_clean_X_FT.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+    np.save('data/MU2_clean_y_FT.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+    upload_blob(BUCKET_NAME, 'data/MU2_clean_X_FT.npy', "MU2_clean_X_FT.npy")
+    upload_blob(BUCKET_NAME, 'data/MU2_clean_y_FT.npy', "MU2_clean_y_FT.npy")
 
     return X, y
 
