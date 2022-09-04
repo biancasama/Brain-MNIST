@@ -75,6 +75,7 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     eeg_in_list = pd.DataFrame(data.iloc[:,3]).apply(lambda x: [int(e) for e in x.str.split(',').iloc[0]], axis=1)
     data = pd.concat([data, eeg_in_list], axis=1)
     data = data.drop(columns=['eeg'])
+    data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
