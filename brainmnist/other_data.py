@@ -95,12 +95,13 @@ if __name__=='__main__':
     dataset_name = 'EP1.01'
 
     df = load_other_data()
+    print(df.shape)
     df = map_other_data(df)
-    # print(df.shape)
+    print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
-    # print(df.shape)
+    print(df.shape)
 
     df = balance_data(df)
     # print(df.shape)

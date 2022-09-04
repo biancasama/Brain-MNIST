@@ -85,8 +85,8 @@ def save_model_RNN_4C_otherData(model: Model = None,
     # mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
 
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_experiment = 'mnist_experiment_fla66'
-    mlflow_model_name = 'mnist_fla66_otherData'
+    mlflow_experiment = f'mnist_experiment_fla66_{dataset_name}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}'
 
     # configure mlflow
     mlflow.set_tracking_uri(mlflow_tracking_uri)
