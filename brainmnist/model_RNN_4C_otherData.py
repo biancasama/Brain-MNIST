@@ -26,17 +26,12 @@ from other_data import map_other_data_array3D, download_blob
 
 def prepare_for_RNN_4C_otherData():
 
-    BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
-
-    df = balance_data(df)
-    X, y = map_other_data_array3D(df)
-
     ##retrieve X and y saved as blobs in bucket
-    download_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_datasets/MU_clean_X.npy")
-    download_blob(BUCKET_NAME, f'data/MU_clean_y.npy', f"other_datasets/MU_clean_y.npy")
-    X = np.load(f'data/MU_clean_X.npy', allow_pickle=True, fix_imports=True)
-    y = np.load(f'data/MU_clean_y.npy', allow_pickle=True, fix_imports=True)
+    BUCKET_NAME = "brain-mnist"
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_clean_X.npy', f"other_datasets/{dataset_name}_clean_X.npy")
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_clean_y.npy', f"other_datasets/{dataset_name}_clean_y.npy")
+    X = np.load(f'data/{dataset_name}_clean_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/{dataset_name}_clean_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
@@ -174,6 +169,8 @@ def load_model_otherData() -> Model:
 
 
 if __name__=='__main__':
+
+    dataset_name = 'EP1.01'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
