@@ -101,7 +101,10 @@ def balance_data(df: pd.DataFrame) -> pd.DataFrame:
         events_of_digit = df[df.channel==df.channel[0]][df[df.channel==df.channel[0]].true_digit==i]['index_event']
 
         #sample min_count_digits events among all events related to true_digit considered
-        sample_events_of_digit = events_of_digit.sample(min_count_digits,replace=False).tolist()
+        if len(events_of_digit) > min_count_digits:
+            sample_events_of_digit = events_of_digit.sample(min_count_digits,replace=False).tolist()
+        else:
+            sample_events_of_digit = events_of_digit.tolist()
 
         #keep only events that were sampled for the digit
         df_sample_digit = df[df.index_event.isin(sample_events_of_digit)]
