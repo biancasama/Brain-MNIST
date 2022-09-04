@@ -45,7 +45,7 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     """
 
     #put eeg data in list format (it was saved as a string in csv)
-    eeg_in_list = pd.DataFrame(df.loc[:,'eeg']).apply(lambda x: [int(e) for e in x.str.split(',').iloc[0]], axis=1)
+    eeg_in_list = pd.DataFrame(df.loc[:,'eeg']).apply(lambda x: [float(e) for e in x.str.split(',').iloc[0]], axis=1)
     df = pd.concat([df, eeg_in_list], axis=1)
     df = df.drop(columns=['eeg'])
     df.columns = ['index_event', 'true_digit', 'channel', 'eeg'] #rename columns
