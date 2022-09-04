@@ -155,16 +155,15 @@ def map_data_FT_array4D(df: pd.DataFrame) -> tuple:
     X_list=[]
     y_list=[]
 
-    for i in range(len(df.index_event.unique())):
+    for i in range(df.shape[0]):
 
         # #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
         # eeg_index_event = df[df.index_event==df.index_event.unique()[i]].apply(lambda x:FT(x),axis=1).T.values.tolist()
         # #concatenate eeg data coming from all events
         # X_list.append(eeg_index_event)
 
-        for j in range(len(df.index_event.unique())):
-            eeg_index_event = df[df.index_event==df.index_event.unique()[i]].iloc[j,:].apply(lambda x:FT(x),axis=1).values.tolist()
-            X_list.append(eeg_index_event)
+        eeg_index_event = df.apply(lambda x:FT(x),axis=1).T.values[i].tolist()
+        X_list.append(eeg_index_event)
 
         #extract y data related to a specific index_event & concatenate them
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
