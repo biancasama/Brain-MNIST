@@ -17,6 +17,8 @@ import pandas as pd
 import os
 #mlflow
 import mlflow
+#gcp
+from google.cloud import storage
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 from other_data import map_other_data_array3D
@@ -111,9 +113,9 @@ def save_model_RNN_4C_otherData(model: Model = None,
 def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
-    batch_size = 512
+    batch_size = 256
     patience = 5
-    epochs = 1
+    epochs = 200
 
     es = EarlyStopping(monitor="val_loss",
                        patience=patience,
@@ -141,7 +143,7 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
     )
 
     # save model
-    save_model_RNN_4C(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
+    save_model_RNN_4C_otherData(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
 
     return val_accuracy
 
