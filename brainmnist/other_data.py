@@ -71,11 +71,11 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
     data = data.reindex(columns=['index_event', 'true_digit', 'channel', 'eeg']) #reorder columns
 
-    #put eeg data in list format
-    eeg_in_list = pd.DataFrame(data.iloc[:,3]).apply(lambda x: [int(e) for e in x.str.split(',').iloc[0]], axis=1)
-    data = pd.concat([data, eeg_in_list], axis=1)
-    data = data.drop(columns=['eeg'])
-    data.columns = ['index_event', 'true_digit', 'channel', 'eeg'] #rename columns
+    # #put eeg data in list format
+    # eeg_in_list = pd.DataFrame(data.iloc[:,3]).apply(lambda x: [int(e) for e in x.str.split(',').iloc[0]], axis=1)
+    # data = pd.concat([data, eeg_in_list], axis=1)
+    # data = data.drop(columns=['eeg'])
+    # data.columns = ['index_event', 'true_digit', 'channel', 'eeg'] #rename columns
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
@@ -91,6 +91,12 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     nb_seq depend on the data used as input (full dataset or balanced dataset)
     xx depends on event
     """
+
+    #put eeg data in list format (it was saved as a string in csv)
+    eeg_in_list = pd.DataFrame(df.loc[:,'eeg']).apply(lambda x: [int(e) for e in x.str.split(',').iloc[0]], axis=1)
+    df = pd.concat([df, eeg_in_list], axis=1)
+    df = df.drop(columns=['eeg'])
+    df.columns = ['index_event', 'true_digit', 'channel', 'eeg'] #rename columns
 
     X_list=[]
     y_list=[]
