@@ -177,6 +177,7 @@ if __name__=='__main__':
     # model.summary()
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
+    print(X_train.shape)
     model = initialize_model_RNN_4C_otherData()
     model = compile_model_RNN_4C_otherData(model)
     train_model_RNN_4C_otherData(model, X_train, y_train)
