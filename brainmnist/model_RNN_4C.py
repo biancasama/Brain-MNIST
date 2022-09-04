@@ -123,7 +123,7 @@ def train_model_RNN_4C(model, X_train, y_train):
     # model params
     batch_size = 512
     patience = 5
-    epochs = 200
+    epochs = 1
 
     es = EarlyStopping(monitor="val_loss",
                        patience=patience,
@@ -176,10 +176,10 @@ def load_model() -> Model:
 
 
 if __name__=='__main__':
-    X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
-    model = initialize_model_RNN_4C()
-    model = compile_model_RNN_4C(model)
-    train_model_RNN_4C(model, X_train, y_train)
+    # X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
+    # model = initialize_model_RNN_4C()
+    # model = compile_model_RNN_4C(model)
+    # train_model_RNN_4C(model, X_train, y_train)
 
     # model = load_model()
     # model.summary()

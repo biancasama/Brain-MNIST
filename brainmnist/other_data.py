@@ -128,21 +128,17 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 if __name__=='__main__':
     df = load_other_data()
     df = map_other_data(df)
-    print(df.shape)
-    print(df.head())
-    print(df[df.index_event==df.index_event.unique()[0]])
+    # print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
-    print(df.shape)
-    print(df.head())
-    print(df[df.index_event==df.index_event.unique()[0]])
+    # print(df.shape)
 
     df = balance_data(df)
-    print(df.shape)
+    # print(df.shape)
 
     X, y = map_other_data_array3D(df)
-    print(X.shape)
-    print(len(X), len(X[0]), len(X[0][0]))
-    print(len(X), len(X[1]), len(X[0][0]))
-    print(y.shape)
+    # print(X.shape)
+    # print(len(X), len(X[0]), len(X[0][0]))
+    # print(len(X), len(X[1]), len(X[0][0]))
+    # print(y.shape)
