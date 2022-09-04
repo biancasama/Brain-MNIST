@@ -198,7 +198,7 @@ def FT(X: pd.Series):
 if __name__=='__main__':
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU2_clean.csv")
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/MU2_clean.csv")
 
     df = balance_data(df)
 
