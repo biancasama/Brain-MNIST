@@ -205,5 +205,4 @@ if __name__=='__main__':
     X, y = map_data_FT_array4D(df)
     print(X.shape)
     print(len(X), len(X[0]), len(X[0][0]), len(X[0][0][0]))
-    print(len(X), len(X[1]), len(X[0][0], len(X[0][0][0])))
     print(y.shape)
