@@ -162,7 +162,7 @@ def map_data_FT_array4D(df: pd.DataFrame) -> tuple:
         # #concatenate eeg data coming from all events
         # X_list.append(eeg_index_event)
 
-        for j in range(len(df.index_event.unique()[i])):
+        for j in range(len(df.index_event.unique())):
             eeg_index_event = df[df.index_event==df.index_event.unique()[i]].iloc[j,:].apply(lambda x:FT(x),axis=1).values.tolist()
             X_list.append(eeg_index_event)
 
