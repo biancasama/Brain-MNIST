@@ -101,13 +101,15 @@ if __name__=='__main__':
 
     BUCKET_NAME = "brain-mnist"
     df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
-    print(df.shape)
+    print(df.shape)    print(df.head())
+
 
     df = balance_data(df)
     print(df.shape)
+    print(df.head())
 
     X, y = map_other_data_array3D(df)
-    # print(X.shape)
-    # print(len(X), len(X[0]), len(X[0][0]))
-    # print(len(X), len(X[1]), len(X[0][0]))
-    # print(y.shape)
+    print(X.shape)
+    print(len(X), len(X[0]), len(X[0][0]))
+    print(len(X), len(X[1]), len(X[0][0]))
+    print(y.shape)
