@@ -33,9 +33,10 @@ def prepare_for_RNN_4C_otherData():
     X, y = map_other_data_array3D(df)
 
     ##retrieve X and y saved as blobs in bucket
-    download_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_data/MU_clean_X.npy")
-    X = np.load(f'data/MU_clean_X.npy')
-    y = np.load(f'data/MU_clean_y.npy')
+    download_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_datasets/MU_clean_X.npy")
+    download_blob(BUCKET_NAME, f'data/MU_clean_y.npy', f"other_datasets/MU_clean_y.npy")
+    X = np.load(f'data/MU_clean_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/MU_clean_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0

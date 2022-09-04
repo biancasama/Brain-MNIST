@@ -123,7 +123,8 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     BUCKET_NAME = "brain-mnist"
     np.save(f'data/MU_clean_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
     np.save(f'data/MU_clean_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_data/MU_clean_X.npy")
+    upload_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_datasets/MU_clean_X.npy")
+    upload_blob(BUCKET_NAME, f'data/MU_clean_y.npy', f"other_datasets/MU_clean_y.npy")
 
     return X, y
 
