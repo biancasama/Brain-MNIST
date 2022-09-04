@@ -5,6 +5,8 @@ from tensorflow.keras.layers import Normalization
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, SimpleRNN, Flatten, LSTM, Masking, GRU
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import Masking
 #sklearn
 from sklearn.model_selection import train_test_split
 #numpy
@@ -17,31 +19,39 @@ import os
 import mlflow
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
+from other_data import map_other_data_array3D
 
 
-def prepare_for_RNN_4C():
+def prepare_for_RNN_4C_otherData():
 
-    df = load_clean_data_from_bucket()
-    #df = df.sort_values(by='index_event').iloc[:20000,:]
+    BUCKET_NAME = "brain-mnist"
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/MU_clean.csv")
+
     df = balance_data(df)
-    X, y = map_data_array3D(df)
+    X, y = map_other_data_array3D(df)
 
+    #pad data
+    X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
+
+    #encode y
     y_copy = y.copy()
     y_copy[y_copy==-1]=10
     y_cat = to_categorical(y_copy)
     y_cat.shape
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y_cat, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X_pad, y_cat, test_size=0.2)
 
     return X_train, X_test, y_train, y_test
 
 
 
-def initialize_model_RNN_4C():
+def initialize_model_RNN_4C_otherData():
 
     model = Sequential()
 
-    model.add(LSTM(units=256, activation='tanh',return_sequences=True, input_shape=(512,4)))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(512,4)))
+
+    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
     model.add(LSTM(units=150, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
@@ -52,7 +62,7 @@ def initialize_model_RNN_4C():
 
 
 
-def compile_model_RNN_4C(model):
+def compile_model_RNN_4C_otherData(model):
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='rmsprop',
@@ -62,9 +72,9 @@ def compile_model_RNN_4C(model):
 
 
 
-def save_model_RNN_4C(model: Model = None,
-                      params: dict = None,
-                      metrics: dict = None) -> None:
+def save_model_RNN_4C_otherData(model: Model = None,
+                                params: dict = None,
+                                metrics: dict = None) -> None:
 
     # retrieve mlflow env params
     # mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
@@ -73,7 +83,7 @@ def save_model_RNN_4C(model: Model = None,
 
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
     mlflow_experiment = 'mnist_experiment_fla66'
-    mlflow_model_name = 'mnist_fla66'
+    mlflow_model_name = 'mnist_fla66_otherData'
 
     # configure mlflow
     mlflow.set_tracking_uri(mlflow_tracking_uri)
@@ -98,7 +108,7 @@ def save_model_RNN_4C(model: Model = None,
 
 
 
-def train_model_RNN_4C(model, X_train, y_train):
+def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
     batch_size = 512
@@ -137,7 +147,7 @@ def train_model_RNN_4C(model, X_train, y_train):
 
 
 
-def load_model() -> Model:
+def load_model_otherData() -> Model:
     """
     load a saved model, return None if no model found
     """
@@ -145,7 +155,7 @@ def load_model() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = 'mnist_fla66'
+    mlflow_model_name = 'mnist_fla66_otherData'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/1"
@@ -156,10 +166,15 @@ def load_model() -> Model:
 
 
 if __name__=='__main__':
-    X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
-    model = initialize_model_RNN_4C()
-    model = compile_model_RNN_4C(model)
-    train_model_RNN_4C(model, X_train, y_train)
+    # X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
+    # model = initialize_model_RNN_4C()
+    # model = compile_model_RNN_4C(model)
+    # train_model_RNN_4C(model, X_train, y_train)
 
     # model = load_model()
     # model.summary()
+
+    X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
+    model = initialize_model_RNN_4C_otherData()
+    model = compile_model_RNN_4C_otherData(model)
+    train_model_RNN_4C_otherData(model, X_train, y_train)
