@@ -90,7 +90,7 @@ def balance_data(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     #number of representations of the digit the less represented for each electrode (first channel is chosen arbitrarily, no impact)
-    min_count_digits = df[df.channel==df.channel[0]].groupby('true_digit').count().iloc[:,0].min()
+    min_count_digits = df[df.channel==df.channel[0]].groupby('true_digit').count().iloc[1:,0].min()
 
     df_concat = pd.DataFrame()
 
