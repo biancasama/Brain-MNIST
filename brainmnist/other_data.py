@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from data import balance_data
+from cloud_data import upload_blob
+from google.cloud import storage
 
 
 def load_other_data() -> pd.DataFrame:
@@ -121,7 +123,22 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     # np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_X.npy", X)
     # np.save(f"gs://{BUCKET_NAME}/other_datasets/MU_clean_y.npy", y)
 
+    ##save X and y as blobs in bucket
+    np.save(f'data/MU_clean_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/MU_clean_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+    upload_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_data/MU_clean_X.npy")
+
     return X, y
+
+
+def download_blob(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the bucket."""
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
 
 
 

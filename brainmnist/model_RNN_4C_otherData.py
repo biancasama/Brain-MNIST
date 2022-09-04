@@ -21,7 +21,7 @@ import mlflow
 from google.cloud import storage
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
-from other_data import map_other_data_array3D
+from other_data import map_other_data_array3D, download_blob
 
 
 def prepare_for_RNN_4C_otherData():
@@ -31,6 +31,11 @@ def prepare_for_RNN_4C_otherData():
 
     df = balance_data(df)
     X, y = map_other_data_array3D(df)
+
+    ##retrieve X and y saved as blobs in bucket
+    download_blob(BUCKET_NAME, f'data/MU_clean_X.npy', f"other_data/MU_clean_X.npy")
+    X = np.load(f'data/MU_clean_X.npy')
+    y = np.load(f'data/MU_clean_y.npy')
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
@@ -168,13 +173,6 @@ def load_model_otherData() -> Model:
 
 
 if __name__=='__main__':
-    # X_train, X_test, y_train, y_test = prepare_for_RNN_4C()
-    # model = initialize_model_RNN_4C()
-    # model = compile_model_RNN_4C(model)
-    # train_model_RNN_4C(model, X_train, y_train)
-
-    # model = load_model()
-    # model.summary()
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
