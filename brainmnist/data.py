@@ -89,8 +89,8 @@ def balance_data(df: pd.DataFrame) -> pd.DataFrame:
     Balance data acoording to the less represented digit
     """
 
-    #number of representations of the digit the less represented for each electrode (TP9 is chosen arbitrarily, no impact)
-    min_count_digits = df[df.channel=='TP9'].groupby('true_digit').count().iloc[:,0].min()
+    #number of representations of the digit the less represented for each electrode (first channel is chosen arbitrarily, no impact)
+    min_count_digits = df[df.channel==df.channel[0]].groupby('true_digit').count().iloc[:,0].min()
 
     df_concat = pd.DataFrame()
 
@@ -98,7 +98,7 @@ def balance_data(df: pd.DataFrame) -> pd.DataFrame:
     for i in range(-1,10):
 
         #identify all events related to the true_digit considered
-        events_of_digit = df[df.channel=='TP9'][df[df.channel=='TP9'].true_digit==i]['index_event']
+        events_of_digit = df[df.channel==df.channel[0]][df[df.channel==df.channel[0]].true_digit==i]['index_event']
 
         #sample min_count_digits events among all events related to true_digit considered
         sample_events_of_digit = events_of_digit.sample(min_count_digits,replace=False).tolist()
