@@ -4,8 +4,10 @@ import numpy as np
 import os
 
 data_dir = pathlib.Path('/data/images')
+print(data_dir)
 
 image_count = len(list(data_dir.glob('*/*.npy')))
+print(image_count)
 
 list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'), shuffle=False)
 list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
