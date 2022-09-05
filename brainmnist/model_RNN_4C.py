@@ -33,8 +33,8 @@ def prepare_for_RNN_4C():
 
     ##retrieve X and y saved as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    download_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"other_datasets/MU2_clean_X.npy")
-    download_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"other_datasets/MU2_clean_y.npy")
+    download_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"MU2_clean_X.npy")
+    download_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"MU2_clean_y.npy")
     X = np.load(f'data/MU2_clean_X.npy', allow_pickle=True, fix_imports=True)
     y = np.load(f'data/MU2_clean_y.npy', allow_pickle=True, fix_imports=True)
 
