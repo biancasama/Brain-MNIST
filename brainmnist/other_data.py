@@ -79,6 +79,7 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
     return X, y
 
 
+
 def download_blob(bucket_name, source_file_name, destination_blob_name):
     """Uploads a file to the bucket."""
 
@@ -86,7 +87,7 @@ def download_blob(bucket_name, source_file_name, destination_blob_name):
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_filename(source_file_name)
+    blob.download_to_filename(source_file_name)
 
 
 

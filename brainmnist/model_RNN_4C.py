@@ -16,23 +16,27 @@ import os
 #mlflow
 import mlflow
 #internal functions
-from data import load_clean_data_from_bucket, balance_data, map_filtered_data_array3D, filtering
+from data import load_clean_data_from_bucket, balance_data, map_filtered_data_array3D, filtering, download_blob
 
 
 def prepare_for_RNN_4C():
 
-    df = load_clean_data_from_bucket()
-    #df = df.sort_values(by='index_event').iloc[:20000,:]
-    df = balance_data(df)
+    # df = load_clean_data_from_bucket()
+    # df = balance_data(df)
 
-    #filtering
-    filtered = pd.DataFrame(df.apply(filtering, axis=1))
-    filtered.columns = ['eeg']
-    df = pd.concat([df.loc[:,['index_event','true_digit','channel']],filtered],axis=1)
+    # #filtering
+    # filtered = pd.DataFrame(df.apply(filtering, axis=1))
+    # filtered.columns = ['eeg']
+    # df = pd.concat([df.loc[:,['index_event','true_digit','channel']],filtered],axis=1)
 
-    X, y = map_filtered_data_array3D(df)
+    # X, y = map_filtered_data_array3D(df)
 
-    # X, y = map_data_array3D(df)
+    ##retrieve X and y saved as blobs in bucket
+    BUCKET_NAME = "brain-mnist"
+    download_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"other_datasets/MU2_clean_X.npy")
+    download_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"other_datasets/MU2_clean_y.npy")
+    X = np.load(f'data/MU2_clean_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/MU2_clean_y.npy', allow_pickle=True, fix_imports=True)
 
     y_copy = y.copy()
     y_copy[y_copy==-1]=10
@@ -49,7 +53,8 @@ def initialize_model_RNN_4C():
 
     model = Sequential()
 
-    model.add(LSTM(units=70, activation='tanh',return_sequences=True, input_shape=(512,4)))
+    model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(512,4)))
+    model.add(LSTM(units=80, activation='tanh',return_sequences=True))
     model.add(LSTM(units=50, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
@@ -109,7 +114,7 @@ def save_model_RNN_4C(model: Model = None,
 def train_model_RNN_4C(model, X_train, y_train):
 
     # model params
-    batch_size = 64
+    batch_size = 32
     patience = 5
     epochs = 20
 

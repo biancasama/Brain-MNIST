@@ -177,8 +177,8 @@ def map_filtered_data_array3D(df: pd.DataFrame) -> tuple:
     BUCKET_NAME = "brain-mnist"
     np.save(f'data/MU2_clean_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
     np.save(f'data/MU2_clean_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"other_datasets/MU2_clean_X.npy")
-    upload_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"other_datasets/MU2_clean_y.npy")
+    upload_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"MU2_clean_X.npy")
+    upload_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"MU2_clean_y.npy")
 
     return X, y
 
@@ -202,6 +202,16 @@ def filtering(X: pd.Series):
 
     return sample_butter
 
+
+
+def download_blob(bucket_name, source_file_name, destination_blob_name):
+    """Download a file from the bucket."""
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.download_to_filename(source_file_name)
 
 
 
