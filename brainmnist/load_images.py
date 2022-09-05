@@ -42,7 +42,7 @@ def decode_img(img):
 
 def process_path(file_path):
   label = get_label(file_path)
-
+/home/flavie/code/fla66/Brain-MNIST/data
   # Load the raw data from the file as a string
   # img = tf.io.read_file(file_path)
   img = decode_img(file_path)
@@ -55,7 +55,3 @@ val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
 for image, label in train_ds.take(1):
   print("Image shape: ", image.numpy().shape)
   print("Label: ", label.numpy())
-
-print(train_ds)
-print(train_ds.shape)
-print(len(train_ds))

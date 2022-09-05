@@ -161,7 +161,7 @@ def map_filtered_data_array3D(df: pd.DataFrame) -> tuple:
     for i in range(len(df.index_event.unique())):
         #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
         eeg_index_event = df[df.index_event==df.index_event.unique()[i]].drop(columns=['index_event','true_digit','channel']).values.tolist()
-        eeg_index_event_manip = np.array([e[0] for e in [el for el in eeg_index_event]]).T.tolist()
+        eeg_index_event_manip = np.array([el for el in eeg_index_event]).T.tolist()
         #concatenate eeg data coming from all events
         X_list.append(eeg_index_event_manip)
 
@@ -169,7 +169,7 @@ def map_filtered_data_array3D(df: pd.DataFrame) -> tuple:
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
 
 
-    X = np.array(X_list,dtype=object) #specify dtype=object to allow different nb of length of sequences
+    X = np.array(X_list,dtype=object)
     y = np.array(y_list)
     del X_list, y_list
 
