@@ -55,3 +55,7 @@ val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
 for image, label in train_ds.take(1):
   print("Image shape: ", image.numpy().shape)
   print("Label: ", label.numpy())
+
+print(train_ds)
+print(train_ds.shape)
+print(len(train_ds))
