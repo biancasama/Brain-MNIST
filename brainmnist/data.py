@@ -169,7 +169,7 @@ def map_filtered_data_array3D(df: pd.DataFrame) -> tuple:
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
 
 
-    X = np.array(X_list,dtype=object)
+    X = np.array(X_list).astype('float32')
     y = np.array(y_list)
     del X_list, y_list
 
