@@ -148,44 +148,45 @@ def map_data_array3D(df: pd.DataFrame) -> tuple:
 
 
 
-def map_data_FT_array4D(df: pd.DataFrame) -> tuple:
+def map_filtered_data_array3D(df: pd.DataFrame) -> tuple:
     """
-
+    Map other data in a 3-dimensional array (nb_seq,nb_obs,n_features)=(nb_seq,xx,4)
+    nb_seq depend on the data used as input (full dataset or balanced dataset)
+    xx depends on event
     """
 
     X_list=[]
     y_list=[]
 
-    for i in range(df.shape[0]):
+    for i in range(len(df.index_event.unique())):
 
-        # #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
-        # eeg_index_event = df[df.index_event==df.index_event.unique()[i]].apply(lambda x:FT(x),axis=1).T.values.tolist()
-        # #concatenate eeg data coming from all events
-        # X_list.append(eeg_index_event)
-
-        eeg_index_event = df.apply(lambda x:FT(x),axis=1).T.values[i].tolist()
-        X_list.append(eeg_index_event)
+        #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
+        eeg_index_event = df[df.index_event==df.index_event.unique()[i]].drop(columns=['index_event','true_digit','channel']).values.tolist()
+        eeg_index_event_manip = np.array([e[0] for e in [el for el in eeg_index_event]]).T.tolist()
+        #concatenate eeg data coming from all events
+        X_list.append(eeg_index_event_manip)
 
         #extract y data related to a specific index_event & concatenate them
         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
 
 
-    X = np.array(X_list)
+    X = np.array(X_list,dtype=object) #specify dtype=object to allow different nb of length of sequences
     y = np.array(y_list)
     del X_list, y_list
 
     ##save X and y as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    np.save('data/MU2_clean_X_FT.npy', X, allow_pickle=True, fix_imports=True) #save X locally
-    np.save('data/MU2_clean_y_FT.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, 'data/MU2_clean_X_FT.npy', "MU2_clean_X_FT.npy")
-    upload_blob(BUCKET_NAME, 'data/MU2_clean_y_FT.npy', "MU2_clean_y_FT.npy")
+    np.save(f'data/MU2_clean_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/MU2_clean_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+    upload_blob(BUCKET_NAME, f'data/MU2_clean_X.npy', f"other_datasets/MU2_clean_X.npy")
+    upload_blob(BUCKET_NAME, f'data/MU2_clean_y.npy', f"other_datasets/MU2_clean_y.npy")
 
     return X, y
 
 
 
-def FT(X: pd.Series):
+
+def filtering(X: pd.Series):
 
     #extract signal
     X_spectro = X.iloc[3:]
@@ -200,10 +201,69 @@ def FT(X: pd.Series):
     sample_notch = notch_filter(X_spectro, w0, Q, fs)
     sample_butter = butter_bandpass_filter(sample_notch, lowcut, highcut, fs, order)
 
-    #create plot
-    f, t, Sxx = signal.stft(sample_butter.astype('float'))
+    return sample_butter
 
-    return Sxx
+
+
+
+# def map_data_FT_array4D(df: pd.DataFrame) -> tuple:
+#     """
+
+#     """
+
+#     X_list=[]
+#     y_list=[]
+
+#     for i in range(df.shape[0]):
+
+#         # #extract eeg data (of 4 channels) related to a specific index_event a put them in list of list format
+#         # eeg_index_event = df[df.index_event==df.index_event.unique()[i]].apply(lambda x:FT(x),axis=1).T.values.tolist()
+#         # #concatenate eeg data coming from all events
+#         # X_list.append(eeg_index_event)
+
+#         eeg_index_event = df.apply(lambda x:FT(x),axis=1).T.values[i].tolist()
+#         X_list.append(eeg_index_event)
+
+#         #extract y data related to a specific index_event & concatenate them
+#         y_list.append(df[df.index_event==df.index_event.unique()[i]]['true_digit'].tolist()[0])
+
+
+#     X = np.array(X_list)
+#     y = np.array(y_list)
+#     del X_list, y_list
+
+#     ##save X and y as blobs in bucket
+#     BUCKET_NAME = "brain-mnist"
+#     np.save('data/MU2_clean_X_FT.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+#     np.save('data/MU2_clean_y_FT.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+#     upload_blob(BUCKET_NAME, 'data/MU2_clean_X_FT.npy', "MU2_clean_X_FT.npy")
+#     upload_blob(BUCKET_NAME, 'data/MU2_clean_y_FT.npy', "MU2_clean_y_FT.npy")
+
+#     return X, y
+
+
+
+# def FT(X: pd.Series):
+
+#     #extract signal
+#     X_spectro = X.iloc[3:]
+
+#     #filter signal
+#     fs = 256
+#     Q = 25
+#     w0 = 50
+#     lowcut = 14
+#     highcut = 71
+#     order = 6
+#     sample_notch = notch_filter(X_spectro, w0, Q, fs)
+#     sample_butter = butter_bandpass_filter(sample_notch, lowcut, highcut, fs, order)
+
+#     #create plot
+#     f, t, Sxx = signal.stft(sample_butter.astype('float'))
+
+#     return Sxx
+
+
 
 
 
