@@ -3,7 +3,7 @@ import pathlib
 import numpy as np
 import os
 
-data_dir = pathlib.Path('/data/images')
+data_dir = pathlib.Path('data/images')
 print(data_dir)
 
 image_count = len(list(data_dir.glob('*/*.npy')))
