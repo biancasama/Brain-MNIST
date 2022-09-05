@@ -32,7 +32,7 @@ def prepare_for_RNN_4C():
 
     X, y = map_filtered_data_array3D(df)
 
-    # X, y = map_filtered_data_array3D(df)
+    # X, y = map_data_array3D(df)
 
     y_copy = y.copy()
     y_copy[y_copy==-1]=10

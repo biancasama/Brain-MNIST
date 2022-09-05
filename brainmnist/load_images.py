@@ -3,9 +3,14 @@ import pathlib
 import numpy as np
 import os
 
-data_dir = pathlib.Path('/data')
+data_dir = pathlib.Path('/data/images')
 
-class_names = np.array(sorted([item.name for item in data_dir.glob('*/*.npy') if item.name != ".ipynb_checkpoints"]))
+image_count = len(list(data_dir.glob('TP9/*.npy')))
+
+list_ds = tf.data.Dataset.list_files(str(data_dir/'TP9/*'), shuffle=False)
+list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
+
+class_names = np.array(sorted([item.name for item in data_dir.glob('TP9/*.npy') if item.name != ".ipynb_checkpoints"]))
 class_names = np.array([label.replace('.npy', '').split('_')[-1] for label in class_names])
 
 val_size = int(image_count * 0.3)
