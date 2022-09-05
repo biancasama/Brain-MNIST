@@ -3,6 +3,7 @@ import numpy as np
 from scipy import signal
 from brainmnist.filtering import notch_filter, butter_bandpass_filter
 from cloud_data import upload_blob
+from google.cloud import storage
 
 
 def load_data() -> pd.DataFrame:
@@ -208,12 +209,15 @@ def FT(X: pd.Series):
 
 if __name__=='__main__':
 
-    BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/MU2_clean.csv")
+    # BUCKET_NAME = "brain-mnist"
+    # df = pd.read_csv(f"gs://{BUCKET_NAME}/MU2_clean.csv")
 
-    df = balance_data(df)
+    # df = balance_data(df)
 
-    X, y = map_data_FT_array4D(df)
-    print(X.shape)
-    print(len(X), len(X[0]), len(X[0][0]), len(X[0][0][0]))
-    print(y.shape)
+    # X, y = map_data_FT_array4D(df)
+    # print(X.shape)
+    # print(len(X), len(X[0]), len(X[0][0]), len(X[0][0][0]))
+    # print(y.shape)
+
+    images = load_blob_images()
+    print(images.shape)
