@@ -295,4 +295,5 @@ def plot_loss_accuracy(history):
         return fig
 
 
-fig = plot_loss_accuracy(history).savefig("data/CNN.png")
+fig = plot_loss_accuracy(history)
+fig.savefig("data/CNN.png")
