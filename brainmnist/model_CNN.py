@@ -9,6 +9,8 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+
 #copy all data from the bucket on the VM (one time)
 # #execute in the VM terminal at the root BRAIN-MNIST:
 
@@ -73,10 +75,10 @@ import matplotlib.pyplot as plt
 data_dir = pathlib.Path(f'data/images')
 print(data_dir)
 
-image_count = len(list(data_dir.glob('*/*.npy')))
+image_count = len(list(data_dir.glob('*/*AF7_4*.npy')))
 print(image_count)
 
-list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*.npy'), shuffle=False)
+list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*AF7_4*.npy'), shuffle=False)
 list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 
 class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
@@ -200,9 +202,15 @@ model.summary()
 model = compile_model(model)
 
 patience=20
-epochs=500
+epochs=1#500
 es = EarlyStopping(patience=patience,
                    restore_best_weights=True)
+
+chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
+                        save_weights_only=True,
+                        save_best_only=True,
+                        monitor='val_loss',
+                        mode='min')
 
 history = model.fit(train_ds,
                     validation_data=val_ds,
