@@ -82,7 +82,7 @@ list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
 
 CONFIG = dict(test_split=.3,
-              batch_size=50000,#32,
+              batch_size=20000,#32,
               img_height = 192,
               img_width = 256,
               n_channels = 3,
