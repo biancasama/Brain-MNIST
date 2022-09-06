@@ -13,61 +13,61 @@ from cloud_data import upload_blob
 # #execute in the VM terminal at the root BRAIN-MNIST:
 
 # #create folders:
-# mkdir data/images/zero
-# mkdir data/images/one
-# mkdir data/images/two
-# mkdir data/images/three
-# mkdir data/images/four
-# mkdir data/images/five
-# mkdir data/images/six
-# mkdir data/images/seven
-# mkdir data/images/eight
-# mkdir data/images/nine
-# mkdir data/images/nothing
+mkdir data/images/zero
+mkdir data/images/one
+mkdir data/images/two
+mkdir data/images/three
+mkdir data/images/four
+mkdir data/images/five
+mkdir data/images/six
+mkdir data/images/seven
+mkdir data/images/eight
+mkdir data/images/nine
+mkdir data/images/nothing
 
 # #copy files from bucket
-# gsutil -m cp gs://brain-mnist/data/zero/\*.npy data/images/zero
-# gsutil -m cp gs://brain-mnist/data/one/\*.npy data/images/one
-# gsutil -m cp gs://brain-mnist/data/two/\*.npy data/images/two
-# gsutil -m cp gs://brain-mnist/data/three/\*.npy data/images/three
-# gsutil -m cp gs://brain-mnist/data/four/\*.npy data/images/four
-# gsutil -m cp gs://brain-mnist/data/five/\*.npy data/images/five
-# gsutil -m cp gs://brain-mnist/data/six/\*.npy data/images/six
-# gsutil -m cp gs://brain-mnist/data/seven/\*.npy data/images/seven
-# gsutil -m cp gs://brain-mnist/data/eight/\*.npy data/images/eight
-# gsutil -m cp gs://brain-mnist/data/nine/\*.npy data/images/nine
+gsutil -m cp gs://brain-mnist/data/zero/\*.npy data/images/zero
+gsutil -m cp gs://brain-mnist/data/one/\*.npy data/images/one
+gsutil -m cp gs://brain-mnist/data/two/\*.npy data/images/two
+gsutil -m cp gs://brain-mnist/data/three/\*.npy data/images/three
+gsutil -m cp gs://brain-mnist/data/four/\*.npy data/images/four
+gsutil -m cp gs://brain-mnist/data/five/\*.npy data/images/five
+gsutil -m cp gs://brain-mnist/data/six/\*.npy data/images/six
+gsutil -m cp gs://brain-mnist/data/seven/\*.npy data/images/seven
+gsutil -m cp gs://brain-mnist/data/eight/\*.npy data/images/eight
+gsutil -m cp gs://brain-mnist/data/nine/\*.npy data/images/nine
 
 #copy only a subset of -1 to have approximately 8000 of them (approx. 2000 by channel)
 # (events beginning by 4, 5, 6 or 7 are chosen arbitrarily to have the wanted nb of events)
-# gsutil -m cp gs://brain-mnist/data/nothing/TP9_4\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP9_5\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP9_6\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP9_7\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP10_4\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP10_5\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP10_6\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/TP10_7\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF7_4\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF7_5\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF7_6\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF7_7\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF8_4\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF8_5\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF8_6\*.npy data/images/nothing
-# gsutil -m cp gs://brain-mnist/data/nothing/AF8_7\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP9_4\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP9_5\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP9_6\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP9_7\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP10_4\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP10_5\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP10_6\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/TP10_7\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF7_4\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF7_5\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF7_6\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF7_7\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF8_4\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF8_5\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF8_6\*.npy data/images/nothing
+gsutil -m cp gs://brain-mnist/data/nothing/AF8_7\*.npy data/images/nothing
 
 # #check:
-# cd data/images/zero ; ls | wc -l ; cd ../../..
-# cd data/images/one ; ls | wc -l ; cd ../../..
-# cd data/images/two ; ls | wc -l ; cd ../../..
-# cd data/images/three ; ls | wc -l ; cd ../../..
-# cd data/images/four ; ls | wc -l ; cd ../../..
-# cd data/images/five ; ls | wc -l ; cd ../../..
-# cd data/images/six ; ls | wc -l ; cd ../../..
-# cd data/images/seven ; ls | wc -l ; cd ../../..
-# cd data/images/eight ; ls | wc -l ; cd ../../..
-# cd data/images/nine ; ls | wc -l ; cd ../../..
-# cd data/images/nothing ; ls | wc -l ; cd ../../..
+cd data/images/zero ; ls | wc -l ; cd ../../..
+cd data/images/one ; ls | wc -l ; cd ../../..
+cd data/images/two ; ls | wc -l ; cd ../../..
+cd data/images/three ; ls | wc -l ; cd ../../..
+cd data/images/four ; ls | wc -l ; cd ../../..
+cd data/images/five ; ls | wc -l ; cd ../../..
+cd data/images/six ; ls | wc -l ; cd ../../..
+cd data/images/seven ; ls | wc -l ; cd ../../..
+cd data/images/eight ; ls | wc -l ; cd ../../..
+cd data/images/nine ; ls | wc -l ; cd ../../..
+cd data/images/nothing ; ls | wc -l ; cd ../../..
 
 # data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/fla66/Brain-MNIST/data/images')
 data_dir = pathlib.Path(f'data/images')
