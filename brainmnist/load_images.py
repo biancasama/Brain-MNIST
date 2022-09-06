@@ -173,8 +173,11 @@ def compile_model(model):
                   metrics=['accuracy'])
     return model
 
+
 model = get_model_vanilla()
 model.summary()
+
+model = compile_model(model)
 
 es = EarlyStopping(patience=20,
                    restore_best_weights=True)
