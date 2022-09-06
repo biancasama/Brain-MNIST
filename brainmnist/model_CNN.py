@@ -211,7 +211,7 @@ chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
 
 history = model.fit(train_ds,
                     validation_data=val_ds,
-                    callbacks = [es],
+                    callbacks = [es,chkpt],
                     epochs=epochs)
 # return the last value of the validation accuracy
 val_accuracy = history.history['val_accuracy'][-1]
