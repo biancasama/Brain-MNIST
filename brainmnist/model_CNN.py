@@ -292,8 +292,6 @@ def plot_loss_accuracy(history):
         ax[1].grid(axis="y", linewidth=0.5)
         ax[1].legend()
 
-        plt.show()
-
         return fig
 
 
