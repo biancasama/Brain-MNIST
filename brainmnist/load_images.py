@@ -54,8 +54,8 @@ import matplotlib.pyplot as plt
 data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/data/images')
 print(data_dir)
 
-# image_count = len(list(data_dir.glob('*/*.npy')))
-# print(image_count)
+image_count = len(list(data_dir.glob('*/*.npy')))
+print(image_count)
 
 # list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'), shuffle=False)
 # list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
