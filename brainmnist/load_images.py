@@ -186,6 +186,7 @@ def get_model_custom():
     model.add(layers.Dense(units=CONFIG['n_classes'], activation='softmax'))
     return model
 
+
 def compile_model(model):
     model.compile(optimizer='adam',
                   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=False),
@@ -198,10 +199,58 @@ model.summary()
 
 model = compile_model(model)
 
-es = EarlyStopping(patience=20,
+patience=20
+epochs=500
+es = EarlyStopping(patience=patience,
                    restore_best_weights=True)
 
-model.fit(train_ds,
-          validation_data=val_ds,
-          callbacks = [es],
-          epochs=500)
+history = model.fit(train_ds,
+                    validation_data=val_ds,
+                    callbacks = [es],
+                    epochs=epochs)
+# return the last value of the validation accuracy
+val_accuracy = history.history['val_accuracy'][-1]
+
+
+
+
+## save results to mlflow
+params = dict(
+    train_accuracy=np.min(history.history['accuracy']),
+    val_accuracy=np.min(history.history['val_accuracy']),
+    CONFIG=CONFIG,
+    patience=patience,
+    epochs=epochs
+)
+
+def save_model_CNN(model: Model = None,
+                   params: dict = None,
+                   metrics: dict = None) -> None:
+
+    mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
+    mlflow_experiment = 'mnist_experiment_fla66_CNN'
+    mlflow_model_name = 'mnist_fla66_CNN'
+
+    # configure mlflow
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    mlflow.set_experiment(experiment_name=mlflow_experiment)
+
+    with mlflow.start_run():
+
+        # STEP 1: push parameters to mlflow
+        mlflow.log_params(params)
+
+        # STEP 2: push metrics to mlflow
+        mlflow.log_metrics(metrics)
+
+        # STEP 3: push model to mlflow
+        if model is not None:
+            mlflow.keras.log_model(keras_model=model,
+                                    artifact_path="model",
+                                    keras_module="tensorflow.keras",
+                                    registered_model_name=mlflow_model_name)
+
+    return None
+
+# save model
+save_model_CNN(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
