@@ -299,9 +299,9 @@ def plot_loss_accuracy(history):
 
 
 fig = plot_loss_accuracy(history)
-# fig.savefig("results/CNN.png")
+fig.savefig("results/CNN.png")
 
 #save in bucket
 BUCKET_NAME = "brain-mnist"
 np.save(f'results/CNN.png', fig, allow_pickle=True, fix_imports=True) #save png locally
-upload_blob(BUCKET_NAME, f'results/CNN.png', f"results/CNN.png")
+upload_blob(BUCKET_NAME, f'results/CNN.png', f"results/CNN.npy")
