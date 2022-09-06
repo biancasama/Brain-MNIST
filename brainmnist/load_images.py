@@ -70,7 +70,7 @@ import matplotlib.pyplot as plt
 # cd data/images/nothing ; ls | wc -l ; cd ../../..
 
 # data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/fla66/Brain-MNIST/data/images')
-data_dir = pathlib.Path(f'/data/images')
+data_dir = pathlib.Path(f'data/images')
 print(data_dir)
 
 image_count = len(list(data_dir.glob('*/*.npy')))
