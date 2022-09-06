@@ -21,7 +21,7 @@ import mlflow
 from google.cloud import storage
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
-from other_data import map_other_data_array3D, download_blob
+from other_data import download_blob
 
 
 def prepare_for_RNN_4C_otherData():
