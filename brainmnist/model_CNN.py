@@ -73,12 +73,12 @@ from cloud_data import upload_blob
 data_dir = pathlib.Path(f'data/images')
 print(data_dir)
 
-# image_count = len(list(data_dir.glob('*/*.npy')))
-image_count = len(list(data_dir.glob('*/*AF7_4*.npy')))
+image_count = len(list(data_dir.glob('*/*.npy')))
+# image_count = len(list(data_dir.glob('*/*AF7_4*.npy')))
 print(image_count)
 
-# list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*.npy'), shuffle=False)
-list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*AF7_4*.npy'), shuffle=False)
+list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*.npy'), shuffle=False)
+# list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*AF7_4*.npy'), shuffle=False)
 list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 
 class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
@@ -202,7 +202,7 @@ model.summary()
 model = compile_model(model)
 
 patience=20
-epochs=1#500
+epochs=500
 es = EarlyStopping(patience=patience,
                    restore_best_weights=True)
 
