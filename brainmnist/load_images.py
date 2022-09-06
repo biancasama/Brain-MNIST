@@ -51,7 +51,7 @@ import matplotlib.pyplot as plt
 # cd data/images/nine ; ls | wc -l ; cd ../../..
 # cd data/images/nothing ; ls | wc -l ; cd ../../..
 
-data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/{os.getenv("USER")}/Brain-MNIST/data/images')
+data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/{os.getenv("USERNAME")}/Brain-MNIST/data/images')
 print(data_dir)
 
 image_count = len(list(data_dir.glob('*/*.npy')))
