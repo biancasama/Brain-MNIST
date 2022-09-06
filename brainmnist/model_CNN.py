@@ -1,15 +1,12 @@
 import tensorflow as tf
 from tensorflow.keras import Sequential, layers, Model
 from tensorflow.keras.callbacks import EarlyStopping
-
 import pathlib
 import os
-
 import numpy as np
-
 import matplotlib.pyplot as plt
-
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import mlflow
 
 #copy all data from the bucket on the VM (one time)
 # #execute in the VM terminal at the root BRAIN-MNIST:
