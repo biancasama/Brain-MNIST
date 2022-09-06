@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras import Sequential, layers
+from tensorflow.keras import Sequential, layers, Model
 from tensorflow.keras.callbacks import EarlyStopping
 
 import pathlib
@@ -82,7 +82,7 @@ list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
 
 CONFIG = dict(test_split=.3,
-              batch_size=2000,#32,
+              batch_size=50000,#32,
               img_height = 192,
               img_width = 256,
               n_channels = 3,
@@ -213,8 +213,8 @@ val_accuracy = history.history['val_accuracy'][-1]
 
 
 
+### save results to mlflow ###
 
-## save results to mlflow
 params = dict(
     train_accuracy=np.min(history.history['accuracy']),
     val_accuracy=np.min(history.history['val_accuracy']),
@@ -254,3 +254,42 @@ def save_model_CNN(model: Model = None,
 
 # save model
 save_model_CNN(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
+
+
+### plot learning curves ###
+
+def plot_loss_accuracy(history):
+    with plt.style.context('seaborn-deep'):
+
+        fig, ax = plt.subplots(1, 2, figsize=(15, 4))
+
+        ## Plot Losses and Accuracies
+        x_axis = np.arange(len(history.history['loss']))
+
+        ax[0].set_title("Loss")
+        ax[0].plot(x_axis, history.history['loss'], color="blue", linestyle=":", marker="X", label="Train Loss")
+        ax[0].plot(x_axis, history.history['val_loss'], color="orange", linestyle="-", marker="X", label="Val Loss")
+
+        ax[1].set_title("Accuracy")
+        ax[1].plot(x_axis, history.history['accuracy'], color="blue", linestyle=":", marker="X", label="Train Accuracy")
+        ax[1].plot(x_axis,
+                   history.history['val_accuracy'],
+                   color="orange",
+                   linestyle="-",
+                   marker="X",
+                   label="Val Accuracy")
+
+        ## Customization
+        ax[0].grid(axis="x", linewidth=0.5)
+        ax[0].grid(axis="y", linewidth=0.5)
+        ax[0].legend()
+        ax[1].grid(axis="x", linewidth=0.5)
+        ax[1].grid(axis="y", linewidth=0.5)
+        ax[1].legend()
+
+        plt.show()
+
+        return fig
+
+
+fig = plot_loss_accuracy(history).savefig("data/CNN.png")
