@@ -76,132 +76,132 @@ print(data_dir)
 image_count = len(list(data_dir.glob('*/*.npy')))
 print(image_count)
 
-# list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*.npy'), shuffle=False)
-# list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
+list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*.npy'), shuffle=False)
+list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 
-# class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
+class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != ".ipynb_checkpoints"]))
 
-# CONFIG = dict(test_split=.3,
-#               batch_size=32,
-#               img_height = 192,
-#               img_width = 256,
-#               n_channels = 3,
-#               n_classes = len(class_names)
-#               )
+CONFIG = dict(test_split=.3,
+              batch_size=32,
+              img_height = 192,
+              img_width = 256,
+              n_channels = 3,
+              n_classes = len(class_names)
+              )
 
-# AUTOTUNE = tf.data.AUTOTUNE
+AUTOTUNE = tf.data.AUTOTUNE
 
-# val_size = int(image_count * CONFIG['test_split'])
-# train_ds = list_ds.skip(val_size)
-# val_ds = list_ds.take(val_size)
+val_size = int(image_count * CONFIG['test_split'])
+train_ds = list_ds.skip(val_size)
+val_ds = list_ds.take(val_size)
 
-# def decode_array(img):
-#     array = tf.numpy_function(np.load, [img], tf.uint8)
-#     return array
+def decode_array(img):
+    array = tf.numpy_function(np.load, [img], tf.uint8)
+    return array
 
-# def get_label(file_path):
-#     parts = tf.strings.split(file_path, os.path.sep)
-#     one_hot = parts[-2] == class_names
-#     return tf.argmax(one_hot)
+def get_label(file_path):
+    parts = tf.strings.split(file_path, os.path.sep)
+    one_hot = parts[-2] == class_names
+    return tf.argmax(one_hot)
 
-# def process_path(file_path):
-#     label = get_label(file_path)
-#     array = decode_array(file_path)
-#     return array, label
+def process_path(file_path):
+    label = get_label(file_path)
+    array = decode_array(file_path)
+    return array, label
 
-# def configure_for_performance(ds):
-#     ds = ds.cache()
-#     ds = ds.shuffle(buffer_size=1000)
-#     ds = ds.batch(CONFIG['batch_size'])
-#     ds = ds.prefetch(buffer_size=AUTOTUNE)
-#     return ds
+def configure_for_performance(ds):
+    ds = ds.cache()
+    ds = ds.shuffle(buffer_size=1000)
+    ds = ds.batch(CONFIG['batch_size'])
+    ds = ds.prefetch(buffer_size=AUTOTUNE)
+    return ds
 
-# train_ds = train_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-# val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
+train_ds = train_ds.map(process_path, num_parallel_calls=AUTOTUNE)
+val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
 
-# train_ds = configure_for_performance(train_ds)
-# val_ds = configure_for_performance(val_ds)
+train_ds = configure_for_performance(train_ds)
+val_ds = configure_for_performance(val_ds)
 
-# # for image, label in train_ds.take(1):
-# #     plt.imshow(image[0])
-# #     print(class_names[label[0].numpy()])
-
-
-# def get_model_vanilla():
-
-#     input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
-
-#     model = tf.keras.Sequential([
-
-#         tf.keras.layers.Input(shape=input_shape),
-
-#         tf.keras.layers.Rescaling(1./255),
-
-#         tf.keras.layers.Conv2D(16, 5, activation='relu'),
-#         tf.keras.layers.MaxPooling2D(),
-
-#         tf.keras.layers.Conv2D(32, 3, activation='relu'),
-#         tf.keras.layers.MaxPooling2D(),
-
-#         tf.keras.layers.Conv2D(32, 2, activation='relu'),
-#         tf.keras.layers.MaxPooling2D(),
-
-#         tf.keras.layers.Flatten(),
-
-#         tf.keras.layers.Dense(32, activation='relu'),
-#         tf.keras.layers.Dropout(.3),
-
-#         tf.keras.layers.Dense(32, activation='relu'),
-#         tf.keras.layers.Dense(units=CONFIG['n_classes'], activation='softmax')
-#     ])
-#     return model
+# for image, label in train_ds.take(1):
+#     plt.imshow(image[0])
+#     print(class_names[label[0].numpy()])
 
 
-# def get_model_custom():
-#     model = Sequential()
+def get_model_vanilla():
 
-#     input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
+    input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
 
-#     model.add(layers.Input(shape=input_shape)),
+    model = tf.keras.Sequential([
 
-#     model.add(layers.Rescaling(1./255)),
+        tf.keras.layers.Input(shape=input_shape),
 
-#     model.add(layers.Conv2D(16, (5, 5), activation='relu'))
-#     model.add(layers.MaxPool2D(pool_size=(2, 2)))
+        tf.keras.layers.Rescaling(1./255),
 
-#     model.add(layers.Conv2D(32, (3, 3), activation='relu'))
-#     model.add(layers.MaxPool2D(pool_size=(2, 2)))
+        tf.keras.layers.Conv2D(16, 5, activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
 
-#     model.add(layers.Conv2D(64, (2, 2), activation='relu'))
-#     model.add(layers.MaxPool2D(pool_size=(2, 2)))
+        tf.keras.layers.Conv2D(32, 3, activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
 
-#     model.add(layers.Flatten())
+        tf.keras.layers.Conv2D(32, 2, activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
 
-#     model.add(layers.Dense(units=64, activation='relu'))
-#     model.add(layers.Dropout(0.3))
+        tf.keras.layers.Flatten(),
 
-#     model.add(layers.Dense(units=32, activation='relu'))
-#     model.add(layers.Dropout(0.1))
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dropout(.3),
 
-#     model.add(layers.Dense(units=CONFIG['n_classes'], activation='softmax'))
-#     return model
-
-# def compile_model(model):
-#     model.compile(optimizer='adam',
-#                   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=False),
-#                   metrics=['accuracy'])
-#     return model
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(units=CONFIG['n_classes'], activation='softmax')
+    ])
+    return model
 
 
-# model = get_model_vanilla()
-# model.summary()
+def get_model_custom():
+    model = Sequential()
 
-# model = compile_model(model)
+    input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
 
-# es = EarlyStopping(patience=20,
-#                    restore_best_weights=True)
+    model.add(layers.Input(shape=input_shape)),
 
-# model.fit(train_ds,
-#           validation_data=val_ds,
-#           callbacks = [es],
-#           epochs=500)
+    model.add(layers.Rescaling(1./255)),
+
+    model.add(layers.Conv2D(16, (5, 5), activation='relu'))
+    model.add(layers.MaxPool2D(pool_size=(2, 2)))
+
+    model.add(layers.Conv2D(32, (3, 3), activation='relu'))
+    model.add(layers.MaxPool2D(pool_size=(2, 2)))
+
+    model.add(layers.Conv2D(64, (2, 2), activation='relu'))
+    model.add(layers.MaxPool2D(pool_size=(2, 2)))
+
+    model.add(layers.Flatten())
+
+    model.add(layers.Dense(units=64, activation='relu'))
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Dense(units=32, activation='relu'))
+    model.add(layers.Dropout(0.1))
+
+    model.add(layers.Dense(units=CONFIG['n_classes'], activation='softmax'))
+    return model
+
+def compile_model(model):
+    model.compile(optimizer='adam',
+                  loss=tf.losses.SparseCategoricalCrossentropy(from_logits=False),
+                  metrics=['accuracy'])
+    return model
+
+
+model = get_model_vanilla()
+model.summary()
+
+model = compile_model(model)
+
+es = EarlyStopping(patience=20,
+                   restore_best_weights=True)
+
+model.fit(train_ds,
+          validation_data=val_ds,
+          callbacks = [es],
+          epochs=500)
