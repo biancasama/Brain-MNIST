@@ -303,5 +303,5 @@ fig.savefig("results/CNN.png")
 
 #save in bucket
 BUCKET_NAME = "brain-mnist"
-np.save(f'results/CNN.npy', fig, allow_pickle=True, fix_imports=True) #save png locally
-upload_blob(BUCKET_NAME, f'results/CNN.npy', f"results/CNN.npy")
+fig.savefig("results/CNN.png") #save png locally
+upload_blob(BUCKET_NAME, f'results/CNN.png', f"results/CNN.png")
