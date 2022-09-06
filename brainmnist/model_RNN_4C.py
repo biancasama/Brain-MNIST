@@ -54,7 +54,7 @@ def initialize_model_RNN_4C():
     model = Sequential()
 
     model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(512,4)))
-    model.add(LSTM(units=80, activation='tanh',return_sequences=True))
+    model.add(LSTM(units=80, activation='tanh', return_sequences=True))
     model.add(LSTM(units=50, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
