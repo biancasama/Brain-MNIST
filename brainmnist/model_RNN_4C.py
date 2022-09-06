@@ -58,7 +58,8 @@ def initialize_model_RNN_4C():
     model.add(LSTM(units=50, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
-    layers.Dropout(0.2)
+    layers.Dropout(0.3)
+    model.add(layers.Dense(50, activation="relu"))
     model.add(layers.Dense(11, activation="softmax"))
 
     return model

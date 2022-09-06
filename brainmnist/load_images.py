@@ -1,7 +1,13 @@
 import tensorflow as tf
+from tensorflow.keras import Sequential, layers
+from tensorflow.keras.callbacks import EarlyStopping
+
 import pathlib
-import numpy as np
 import os
+
+import numpy as np
+
+import matplotlib.pyplot as plt
 
 #copy all data from the bucket on the VM (one time)
 # #execute in the VM terminal at the root BRAIN-MNIST:
@@ -45,95 +51,94 @@ import os
 # cd data/images/nine ; ls | wc -l ; cd ../../..
 # cd data/images/nothing ; ls | wc -l ; cd ../../..
 
-
-data_dir = pathlib.Path('data/images')
+data_dir = pathlib.Path(f'{os.getenv("HOME")}/code/data/images')
 print(data_dir)
 
-image_count = len(list(data_dir.glob('*/*.npy')))
-print(image_count)
+# image_count = len(list(data_dir.glob('*/*.npy')))
+# print(image_count)
 
-list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'), shuffle=False)
-list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
+# list_ds = tf.data.Dataset.list_files(str(data_dir/'*/*'), shuffle=False)
+# list_ds = list_ds.shuffle(image_count, reshuffle_each_iteration=False)
 
-class_names = np.array(sorted([item.name for item in data_dir.glob('*/*.npy') if item.name != ".ipynb_checkpoints"]))
-class_names = np.array([label.replace('.npy', '').split('_')[-1] for label in class_names])
-class_names = [class_.encode('utf-8') for class_ in class_names]
-class_names = np.unique(class_names)
+# class_names = np.array(sorted([item.name for item in data_dir.glob('*/*.npy') if item.name != ".ipynb_checkpoints"]))
+# class_names = np.array([label.replace('.npy', '').split('_')[-1] for label in class_names])
+# class_names = [class_.encode('utf-8') for class_ in class_names]
+# class_names = np.unique(class_names)
 
-val_size = int(image_count * 0.3)
-train_ds = list_ds.skip(val_size)
-val_ds = list_ds.take(val_size)
+# val_size = int(image_count * 0.3)
+# train_ds = list_ds.skip(val_size)
+# val_ds = list_ds.take(val_size)
 
-AUTOTUNE = tf.data.AUTOTUNE
-img_height = 192
-img_width = 256
-
-
-def decode_img(img):
-    image = tf.numpy_function(np.load, [img], tf.uint8)
-    return tf.expand_dims(image, 0)
+# AUTOTUNE = tf.data.AUTOTUNE
+# img_height = 192
+# img_width = 256
 
 
-def get_label(file_path):
-    # Convert the path to a list of path components
-    parts = tf.strings.split(file_path, os.path.sep)
-    # The second to last is the class-directory
-    file_name = parts[-1]
-    label = tf.strings.split(file_name, sep='_', maxsplit=-1, name=None)[-1]
-
-    label = tf.strings.regex_replace(
-    label, '.npy', '', replace_global=True, name=None)
-
-    one_hot = label == class_names
-    # Integer encode the label
-    return tf.expand_dims(tf.reshape(one_hot, (1,4)), 0)
+# def decode_img(img):
+#     image = tf.numpy_function(np.load, [img], tf.uint8)
+#     return tf.expand_dims(image, 0)
 
 
+# def get_label(file_path):
+#     # Convert the path to a list of path components
+#     parts = tf.strings.split(file_path, os.path.sep)
+#     # The second to last is the class-directory
+#     file_name = parts[-1]
+#     label = tf.strings.split(file_name, sep='_', maxsplit=-1, name=None)[-1]
 
-def process_path(file_path):
-    label = get_label(file_path)
+#     label = tf.strings.regex_replace(
+#     label, '.npy', '', replace_global=True, name=None)
 
-    # Load the raw data from the file as a string
-    # img = tf.io.read_file(file_path)
-    img = decode_img(file_path)
-
-    return img, label
-
-
-train_ds = train_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-
-
-for image, label in train_ds.take(1):
-    print("Image shape: ", image.numpy().shape)
-    print("Label: ", label)
+#     one_hot = label == class_names
+#     # Integer encode the label
+#     return tf.expand_dims(tf.reshape(one_hot, (1,4)), 0)
 
 
-from tensorflow.keras import Sequential, layers
-from tensorflow.keras.layers import Dense, Reshape
 
-model = Sequential()
+# def process_path(file_path):
+#     label = get_label(file_path)
 
-input_shape = (192, 256, 3)
+#     # Load the raw data from the file as a string
+#     # img = tf.io.read_file(file_path)
+#     img = decode_img(file_path)
 
-model.add(layers.Conv2D(32, (5, 5), input_shape=input_shape, activation='relu'))
-model.add(layers.Conv2D(32, (5, 5), activation='relu'))
-model.add(layers.MaxPool2D(pool_size=(2, 2)))
-model.add(layers.Dropout(0.1))
+#     return img, label
 
-model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-model.add(layers.MaxPool2D(pool_size=(2, 2)))
-model.add(layers.Dropout(0.1))
 
-model.add(layers.Flatten())
-model.add(Dense(units=128, activation='relu'))
-model.add(layers.Dropout(0.1))
+# train_ds = train_ds.map(process_path, num_parallel_calls=AUTOTUNE)
+# val_ds = val_ds.map(process_path, num_parallel_calls=AUTOTUNE)
 
-model.add(Dense(units=64, activation='relu'))
-model.add(layers.Dropout(0.1))
 
-model.add(Dense(units=4, activation='softmax'))
-model.compile(optimizer='adam', loss=tf.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy'])
+# for image, label in train_ds.take(1):
+#     print("Image shape: ", image.numpy().shape)
+#     print("Label: ", label)
 
-model.fit(train_ds, validation_data=val_ds, epochs=3, batch_size=2)
+
+# from tensorflow.keras import Sequential, layers
+# from tensorflow.keras.layers import Dense, Reshape
+
+# model = Sequential()
+
+# input_shape = (192, 256, 3)
+
+# model.add(layers.Conv2D(32, (5, 5), input_shape=input_shape, activation='relu'))
+# model.add(layers.Conv2D(32, (5, 5), activation='relu'))
+# model.add(layers.MaxPool2D(pool_size=(2, 2)))
+# model.add(layers.Dropout(0.1))
+
+# model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+# model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+# model.add(layers.MaxPool2D(pool_size=(2, 2)))
+# model.add(layers.Dropout(0.1))
+
+# model.add(layers.Flatten())
+# model.add(Dense(units=128, activation='relu'))
+# model.add(layers.Dropout(0.1))
+
+# model.add(Dense(units=64, activation='relu'))
+# model.add(layers.Dropout(0.1))
+
+# model.add(Dense(units=4, activation='softmax'))
+# model.compile(optimizer='adam', loss=tf.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy'])
+
+# model.fit(train_ds, validation_data=val_ds, epochs=3, batch_size=2)
