@@ -28,10 +28,10 @@ def prepare_for_RNN_4C_otherData():
 
     ##retrieve X and y saved as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_X.npy', f"other_datasets/{dataset_name}_filtered_X.npy")
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_y.npy', f"other_datasets/{dataset_name}_filtered_y.npy")
-    X = np.load(f'data/{dataset_name}_filtered_X.npy', allow_pickle=True, fix_imports=True)
-    y = np.load(f'data/{dataset_name}_filtered_y.npy', allow_pickle=True, fix_imports=True)
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_X.npy', f"other_datasets/{dataset_name}_filtered_cut_X.npy")
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_y.npy', f"other_datasets/{dataset_name}_filtered_cut_y.npy")
+    X = np.load(f'data/{dataset_name}_filtered_cut_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/{dataset_name}_filtered_cut_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
