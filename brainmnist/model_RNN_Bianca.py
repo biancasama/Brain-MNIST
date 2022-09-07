@@ -21,18 +21,31 @@ import mlflow
 from google.cloud import storage
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
-from other_data import download_blob, upload_blob
+from other_data import download_blob, upload_blob, map_other_data_array3D
 import matplotlib.pyplot as plt
 
 
 def prepare_for_RNN_4C_otherData():
 
-    ##retrieve X and y saved as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_{detail}_X.npy', f"other_datasets/{dataset_name}_filtered_{detail}_X.npy")
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_{detail}_y.npy', f"other_datasets/{dataset_name}_filtered_{detail}_y.npy")
-    X = np.load(f'data/{dataset_name}_filtered_{detail}_X.npy', allow_pickle=True, fix_imports=True)
-    y = np.load(f'data/{dataset_name}_filtered_{detail}_y.npy', allow_pickle=True, fix_imports=True)
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
+    print(df.shape)
+    print(df.head())
+
+    df = df.replace({np.nan: -1000})
+
+    X, y = map_other_data_array3D(df)
+    print(X.shape)
+    print(len(X), len(X[0]), len(X[0][0]))
+    print(len(X), len(X[1]), len(X[0][0]))
+    print(y.shape)
+
+    # ##retrieve X and y saved as blobs in bucket
+    # BUCKET_NAME = "brain-mnist"
+    # download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_{detail}_X.npy', f"other_datasets/{dataset_name}_filtered_{detail}_X.npy")
+    # download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_{detail}_y.npy', f"other_datasets/{dataset_name}_filtered_{detail}_y.npy")
+    # X = np.load(f'data/{dataset_name}_filtered_{detail}_X.npy', allow_pickle=True, fix_imports=True)
+    # y = np.load(f'data/{dataset_name}_filtered_{detail}_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
