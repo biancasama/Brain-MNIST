@@ -186,4 +186,5 @@ if __name__=='__main__':
 
     model = load_model_otherData()
 
-    model.evaluate(X_test, y_test, verbose=0)
+    res = model.evaluate(X_test, y_test, verbose=0)
+    print(res)
