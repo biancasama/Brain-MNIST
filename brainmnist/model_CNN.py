@@ -201,6 +201,8 @@ model.summary()
 
 model = compile_model(model)
 
+model.load_weights(f'checkpoints/model_checkpoint')
+
 patience=20
 epochs=500
 es = EarlyStopping(patience=patience,
