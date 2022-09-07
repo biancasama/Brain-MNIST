@@ -164,7 +164,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = 'mnist_fla66_{dataset_name}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/6"
