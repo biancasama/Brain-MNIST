@@ -172,7 +172,7 @@ if __name__=='__main__':
     # print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv", nrows=14000)
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
     print(df.shape)
     print(df.head())
 
