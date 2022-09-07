@@ -4,7 +4,7 @@ from tensorflow.keras import layers, Model, models
 from tensorflow.keras.layers import Normalization
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, SimpleRNN, Flatten, LSTM, Masking, GRU
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Masking, Normalization, InputLayer
 #sklearn
@@ -21,17 +21,18 @@ import mlflow
 from google.cloud import storage
 #internal functions
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
-from other_data import download_blob
+from other_data import download_blob, upload_blob
+import matplotlib.pyplot as plt
 
 
 def prepare_for_RNN_4C_otherData():
 
     ##retrieve X and y saved as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_X.npy', f"other_datasets/{dataset_name}_filtered_cut_X.npy")
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_y.npy', f"other_datasets/{dataset_name}_filtered_cut_y.npy")
-    X = np.load(f'data/{dataset_name}_filtered_cut_X.npy', allow_pickle=True, fix_imports=True)
-    y = np.load(f'data/{dataset_name}_filtered_cut_y.npy', allow_pickle=True, fix_imports=True)
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_{detail}_X.npy', f"other_datasets/{dataset_name}_filtered_cut_{detail}_X.npy")
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_{detail}_y.npy', f"other_datasets/{dataset_name}_filtered_cut_{detail}_y.npy")
+    X = np.load(f'data/{dataset_name}_filtered_cut_{detail}_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/{dataset_name}_filtered_cut_{detail}_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
@@ -91,8 +92,8 @@ def save_model_RNN_4C_otherData(model: Model = None,
     # mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
 
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_experiment = f'mnist_experiment_fla66_{dataset_name}'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}'
+    mlflow_experiment = f'mnist_experiment_fla66_{dataset_name}_{detail}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
 
     # configure mlflow
     mlflow.set_tracking_uri(mlflow_tracking_uri)
@@ -117,6 +118,41 @@ def save_model_RNN_4C_otherData(model: Model = None,
 
 
 
+
+def plot_loss_accuracy(history):
+    with plt.style.context('seaborn-deep'):
+
+        fig, ax = plt.subplots(1, 2, figsize=(15, 4))
+
+        ## Plot Losses and Accuracies
+        x_axis = np.arange(len(history.history['loss']))
+
+        ax[0].set_title("Loss")
+        ax[0].plot(x_axis, history.history['loss'], color="blue", linestyle=":", marker="X", label="Train Loss")
+        ax[0].plot(x_axis, history.history['val_loss'], color="orange", linestyle="-", marker="X", label="Val Loss")
+
+        ax[1].set_title("Accuracy")
+        ax[1].plot(x_axis, history.history['accuracy'], color="blue", linestyle=":", marker="X", label="Train Accuracy")
+        ax[1].plot(x_axis,
+                   history.history['val_accuracy'],
+                   color="orange",
+                   linestyle="-",
+                   marker="X",
+                   label="Val Accuracy")
+
+        ## Customization
+        ax[0].grid(axis="x", linewidth=0.5)
+        ax[0].grid(axis="y", linewidth=0.5)
+        ax[0].legend()
+        ax[1].grid(axis="x", linewidth=0.5)
+        ax[1].grid(axis="y", linewidth=0.5)
+        ax[1].legend()
+
+        return fig
+
+
+
+
 def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
@@ -129,11 +165,17 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
                        restore_best_weights=True,
                        verbose=0)
 
+    chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
+                            save_weights_only=True,
+                            save_best_only=True,
+                            monitor='val_loss',
+                            mode='min')
+
     history = model.fit(X_train, y_train,
                         validation_split=0.2,
                         batch_size=batch_size,
                         epochs=epochs,
-                        callbacks=[es],
+                        callbacks=[es,chkpt],
                         shuffle=True,
                         verbose=1)
 
@@ -152,7 +194,17 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
     # save model
     save_model_RNN_4C_otherData(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
 
+    ### plot learning curves ###
+    fig = plot_loss_accuracy(history)
+    fig.savefig("results/RNN_{dataset_name}_{detail}.png")
+
+    #save in bucket
+    BUCKET_NAME = "brain-mnist"
+    fig.savefig("results/RNN_{dataset_name}_{detail}.png") #save png locally
+    upload_blob(BUCKET_NAME, f'results/RNN_{dataset_name}_{detail}.png', f"results/RNN_{dataset_name}_{detail}.png")
+
     return val_accuracy
+
 
 
 
@@ -164,7 +216,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/6"
@@ -177,14 +229,15 @@ def load_model_otherData() -> Model:
 if __name__=='__main__':
 
     dataset_name = 'EP1.01'
+    detail = '128Hz'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
-    # print(X_train.shape)
-    # model = initialize_model_RNN_4C_otherData(X_train)
-    # model = compile_model_RNN_4C_otherData(model)
-    # train_model_RNN_4C_otherData(model, X_train, y_train)
+    print(X_train.shape)
+    model = initialize_model_RNN_4C_otherData(X_train)
+    model = compile_model_RNN_4C_otherData(model)
+    train_model_RNN_4C_otherData(model, X_train, y_train)
 
-    model = load_model_otherData()
+    # model = load_model_otherData()
 
-    res = model.evaluate(X_test, y_test, verbose=0)
-    print(res)
+    # res = model.evaluate(X_test, y_test, verbose=0)
+    # print(res)
