@@ -124,58 +124,58 @@ if __name__=='__main__':
 
     dataset_name = 'IN'
 
-    df = load_other_data()
-    print(df.shape)
-    df = map_other_data_IN(df)
-    print(df.shape)
-
-    # BUCKET_NAME = "brain-mnist"
-    # df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
+    # df = load_other_data()
     # print(df.shape)
-    # print(df.head())
-
-    # df = balance_data(df)
-    # #delete columns only composed of nans (possible if subset of data)
-    # try:
-    #     tmp = df.isnull().sum(axis=0)
-    #     cols_nan = int(tmp[tmp==df.shape[0]].index[0])
-    #     df = df.iloc[:,:(3+cols_nan)]
-    # except:
-    #     pass
-    # df = df.iloc[:,:103] #couper abitrairement les séquences
+    # df = map_other_data_IN(df)
     # print(df.shape)
-    # print(df.head())
 
-    # #filtering
-    # fs = 256 #sampling rate
-    # lowcut = 14 #high-pass filter of sufficient frequency to remove DC offset
-    # highcut = 70
-    # notch = pd.concat([df.iloc[:,:3].reset_index().drop(columns='index'),
-    #                    pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
-    # #delete columns only composed of nans (possible if subset of data)
-    # tmp = notch.isnull().sum(axis=0)
-    # try:
-    #     cols_nan = int(tmp[tmp==notch.shape[0]].index[0])
-    #     notch = notch.iloc[:,:(3+cols_nan)]
-    # except:
-    #     pass
-    # print(notch.shape)
-    # print(notch.head())
+    BUCKET_NAME = "brain-mnist"
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
+    print(df.shape)
+    print(df.head())
 
-    # df_butter = pd.concat([notch.iloc[:,:3].reset_index().drop(columns='index'),
-    #                        pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
-    # df_butter = df_butter.replace({np.nan: -1000}) #replace nans by 1000 for paading to come
-    # tmp = df_butter.isnull().sum(axis=0)
-    # try:
-    #     cols_nan = int(tmp[tmp==df_butter.shape[0]].index[0])
-    #     df_butter = df_butter.iloc[:,:(3+cols_nan)]
-    # except:
-    #     pass
-    # print(df_butter.shape)
-    # print(df_butter.head())
+    df = balance_data(df)
+    #delete columns only composed of nans (possible if subset of data)
+    try:
+        tmp = df.isnull().sum(axis=0)
+        cols_nan = int(tmp[tmp==df.shape[0]].index[0])
+        df = df.iloc[:,:(3+cols_nan)]
+    except:
+        pass
+    df = df.iloc[:,:103] #couper abitrairement les séquences
+    print(df.shape)
+    print(df.head())
 
-    # X, y = map_other_data_array3D(df_butter)
-    # print(X.shape)
-    # print(len(X), len(X[0]), len(X[0][0]))
-    # print(len(X), len(X[1]), len(X[0][0]))
-    # print(y.shape)
+    #filtering
+    fs = 128 #sampling rate
+    lowcut = 14 #high-pass filter of sufficient frequency to remove DC offset
+    highcut = 70
+    notch = pd.concat([df.iloc[:,:3].reset_index().drop(columns='index'),
+                       pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
+    #delete columns only composed of nans (possible if subset of data)
+    tmp = notch.isnull().sum(axis=0)
+    try:
+        cols_nan = int(tmp[tmp==notch.shape[0]].index[0])
+        notch = notch.iloc[:,:(3+cols_nan)]
+    except:
+        pass
+    print(notch.shape)
+    print(notch.head())
+
+    df_butter = pd.concat([notch.iloc[:,:3].reset_index().drop(columns='index'),
+                           pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
+    df_butter = df_butter.replace({np.nan: -1000}) #replace nans by 1000 for paading to come
+    tmp = df_butter.isnull().sum(axis=0)
+    try:
+        cols_nan = int(tmp[tmp==df_butter.shape[0]].index[0])
+        df_butter = df_butter.iloc[:,:(3+cols_nan)]
+    except:
+        pass
+    print(df_butter.shape)
+    print(df_butter.head())
+
+    X, y = map_other_data_array3D(df_butter)
+    print(X.shape)
+    print(len(X), len(X[0]), len(X[0][0]))
+    print(len(X), len(X[1]), len(X[0][0]))
+    print(y.shape)
