@@ -187,7 +187,7 @@ if __name__=='__main__':
     notch = pd.concat([df.iloc[:,:3], pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
     print(notch.shape)
     print(notch.head())
-    butter= pd.concat([notch.iloc[:,:3], pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, sf, order=2))], axis= 1)
+    butter= pd.concat([notch.iloc[:,:3], pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
     print(butter.shape)
     print(butter.head())
 

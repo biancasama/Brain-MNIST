@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, SimpleRNN, Flatten, LSTM, Masking, GRU
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.layers import Masking
+from tensorflow.keras.layers import Masking, Normalization
 #sklearn
 from sklearn.model_selection import train_test_split
 #numpy
@@ -28,10 +28,10 @@ def prepare_for_RNN_4C_otherData():
 
     ##retrieve X and y saved as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_clean_X.npy', f"other_datasets/{dataset_name}_clean_X.npy")
-    download_blob(BUCKET_NAME, f'data/{dataset_name}_clean_y.npy', f"other_datasets/{dataset_name}_clean_y.npy")
-    X = np.load(f'data/{dataset_name}_clean_X.npy', allow_pickle=True, fix_imports=True)
-    y = np.load(f'data/{dataset_name}_clean_y.npy', allow_pickle=True, fix_imports=True)
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_X.npy', f"other_datasets/{dataset_name}_filtered_X.npy")
+    download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_y.npy', f"other_datasets/{dataset_name}_filtered_y.npy")
+    X = np.load(f'data/{dataset_name}_filtered_X.npy', allow_pickle=True, fix_imports=True)
+    y = np.load(f'data/{dataset_name}_filtered_y.npy', allow_pickle=True, fix_imports=True)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
@@ -48,17 +48,20 @@ def prepare_for_RNN_4C_otherData():
 
 
 
-def initialize_model_RNN_4C_otherData():
+def initialize_model_RNN_4C_otherData(X_train):
+
+    normalizer = Normalization() # Instantiate a "normalizer" layer
+    normalizer.adapt(X_train) # "Fit" it on the train set
 
     model = Sequential()
 
-    model.add(layers.Masking(mask_value=-1000, input_shape=(320,14)))
-
-    model.add(LSTM(units=256, activation='tanh',return_sequences=True))
-    model.add(LSTM(units=150, activation='tanh'))
+    model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(512,4)))
+    model.add(LSTM(units=80, activation='tanh', return_sequences=True))
+    model.add(LSTM(units=50, activation='tanh'))
 
     model.add(layers.Dense(50, activation="relu"))
-    layers.Dropout(0.2)
+    layers.Dropout(0.3)
+    model.add(layers.Dense(50, activation="relu"))
     model.add(layers.Dense(11, activation="softmax"))
 
     return model
@@ -158,7 +161,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = 'mnist_fla66_otherData'
+    mlflow_model_name = 'mnist_fla66_EPOC'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/1"
@@ -174,6 +177,6 @@ if __name__=='__main__':
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
-    model = initialize_model_RNN_4C_otherData()
+    model = initialize_model_RNN_4C_otherData(X_train)
     model = compile_model_RNN_4C_otherData(model)
     train_model_RNN_4C_otherData(model, X_train, y_train)
