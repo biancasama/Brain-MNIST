@@ -172,11 +172,15 @@ if __name__=='__main__':
     # print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv", nrows=14000)
     print(df.shape)
     print(df.head())
 
     df = balance_data(df)
+    #delete columns only composed of nans (possible if subset of data)
+    tmp = df.isnull().sum(axis=0)
+    cols_nan = int(tmp[tmp==df.shape[0]].index[0])
+    df = df.iloc[:,:(3+cols_nan)]
     print(df.shape)
     print(df.head())
 
@@ -186,10 +190,19 @@ if __name__=='__main__':
     highcut = 70
     notch = pd.concat([df.iloc[:,:3].reset_index().drop(columns='index'),
                        pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
+    #delete columns only composed of nans (possible if subset of data)
+    tmp = notch.isnull().sum(axis=0)
+    cols_nan = int(tmp[tmp==notch.shape[0]].index[0])
+    notch = notch.iloc[:,:(3+cols_nan)]
     print(notch.shape)
     print(notch.head())
+
     df_butter = pd.concat([notch.iloc[:,:3].reset_index().drop(columns='index'),
                            pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
+    df_butter = df_butter.replace({np.nan: -1000}) #replace nans by 1000 for paading to come
+    tmp = df_butter.isnull().sum(axis=0)
+    cols_nan = int(tmp[tmp==df_butter.shape[0]].index[0])
+    df_butter = df_butter.iloc[:,:(3+cols_nan)]
     print(df_butter.shape)
     print(df_butter.head())
 

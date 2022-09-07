@@ -55,8 +55,8 @@ def initialize_model_RNN_4C_otherData(X_train):
 
     model = Sequential()
 
-    model.add(InputLayer(input_shape=(323,14)))
     model.add(normalizer)
+    model.add(InputLayer(input_shape=(X_train.shape[1],14)))
     model.add(LSTM(units=50, activation='tanh', return_sequences=True))
     model.add(LSTM(units=80, activation='tanh', return_sequences=True))
     model.add(LSTM(units=50, activation='tanh'))
