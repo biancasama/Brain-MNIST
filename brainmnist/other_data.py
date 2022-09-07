@@ -172,7 +172,7 @@ if __name__=='__main__':
     # print(df.shape)
 
     BUCKET_NAME = "brain-mnist"
-    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv", nrows=14000)
     print(df.shape)
     print(df.head())
 
@@ -184,14 +184,16 @@ if __name__=='__main__':
     fs = 256 #sampling rate
     lowcut = 14 #high-pass filter of sufficient frequency to remove DC offset
     highcut = 70
-    notch = pd.concat([df.iloc[:,:3], pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
+    notch = pd.concat([df.iloc[:,:3].reset_index().drop(columns='index'),
+                       pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
     print(notch.shape)
     print(notch.head())
-    butter= pd.concat([notch.iloc[:,:3], pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
-    print(butter.shape)
-    print(butter.head())
+    df_butter = pd.concat([notch.iloc[:,:3].reset_index().drop(columns='index'),
+                           pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
+    print(df_butter.shape)
+    print(df_butter.head())
 
-    X, y = map_other_data_array3D(butter)
+    X, y = map_other_data_array3D(df_butter)
     print(X.shape)
     print(len(X), len(X[0]), len(X[0][0]))
     print(len(X), len(X[1]), len(X[0][0]))
