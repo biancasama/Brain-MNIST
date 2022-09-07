@@ -3,6 +3,7 @@ import numpy as np
 from data import balance_data
 from cloud_data import upload_blob
 from google.cloud import storage
+from filtering import notch_filter, butter_bandpass_filter
 
 
 def load_other_data() -> pd.DataFrame:
@@ -96,10 +97,10 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
     ##save X and y as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    np.save(f'data/{dataset_name}_clean_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'data/{dataset_name}_clean_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, f'data/{dataset_name}_clean_X.npy', f"other_datasets/{dataset_name}_clean_X.npy")
-    upload_blob(BUCKET_NAME, f'data/{dataset_name}_clean_y.npy', f"other_datasets/{dataset_name}_clean_y.npy")
+    np.save(f'data/{dataset_name}_filtered_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/{dataset_name}_filtered_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_X.npy', f"other_datasets/{dataset_name}_filtered_X.npy")
+    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_y.npy', f"other_datasets/{dataset_name}_filtered_y.npy")
 
     return X, y
 
@@ -179,7 +180,18 @@ if __name__=='__main__':
     print(df.shape)
     print(df.head())
 
-    X, y = map_other_data_array3D(df)
+    #filtering
+    fs = 256 #sampling rate
+    lowcut = 14 #high-pass filter of sufficient frequency to remove DC offset
+    highcut = 70
+    notch = pd.concat([df.iloc[:,:3], pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
+    print(notch.shape)
+    print(notch.head())
+    butter= pd.concat([notch.iloc[:,:3], pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, sf, order=2))], axis= 1)
+    print(butter.shape)
+    print(butter.head())
+
+    X, y = map_other_data_array3D(butter)
     print(X.shape)
     print(len(X), len(X[0]), len(X[0][0]))
     print(len(X), len(X[1]), len(X[0][0]))
