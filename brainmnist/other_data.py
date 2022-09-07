@@ -190,6 +190,7 @@ if __name__=='__main__':
     # print(len(X), len(X[0]), len(X[0][0]))
     # print(len(X), len(X[1]), len(X[0][0]))
     # print(y.shape)
+    df = df.replace({np.nan: -1000})
 
     X, y = map_other_data_array3D(df)
     print(X.shape)
