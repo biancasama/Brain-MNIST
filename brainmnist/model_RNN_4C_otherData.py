@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, SimpleRNN, Flatten, LSTM, Masking, GRU
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.layers import Masking, Normalization
+from tensorflow.keras.layers import Masking, Normalization, InputLayer
 #sklearn
 from sklearn.model_selection import train_test_split
 #numpy
@@ -55,7 +55,9 @@ def initialize_model_RNN_4C_otherData(X_train):
 
     model = Sequential()
 
-    model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(512,4)))
+    model.add(normalizer)
+    # model.add(InputLayer(input_shape=(323,14)))
+    model.add(LSTM(units=50, activation='tanh', return_sequences=True, input_shape=(323,14)))
     model.add(LSTM(units=80, activation='tanh', return_sequences=True))
     model.add(LSTM(units=50, activation='tanh'))
 
@@ -161,7 +163,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = 'mnist_fla66_EPOC'
+    mlflow_model_name = 'mnist_fla66_{dataset_name}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/1"
