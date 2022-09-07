@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import mlflow
 from cloud_data import upload_blob
+from tensorflow.keras.applications.vgg16 import VGG16
 
 #copy all data from the bucket on the VM (one time)
 # #execute in the VM terminal at the root BRAIN-MNIST:
@@ -129,6 +130,23 @@ val_ds = configure_for_performance(val_ds)
 #     print(class_names[label[0].numpy()])
 
 
+def get_model_vgg():
+
+    base = VGG16(weights="imagenet",
+                  include_top=False, input_shape=input_shape)
+
+    base.trainable = False
+
+    model = Sequential([
+        base,
+        layers.Flatten(),
+        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(CONFIG['n_classes'], activation='softmax')
+    ])
+
+    return model
+
+
 def get_model_vanilla():
 
     input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
@@ -196,12 +214,12 @@ def compile_model(model):
     return model
 
 
-model = get_model_vanilla()
+model = get_model_vgg()
 model.summary()
 
 model = compile_model(model)
 
-model.load_weights(f'checkpoints/model_checkpoint')
+# model.load_weights(f'checkpoints/model_checkpoint')
 
 patience=20
 epochs=500
