@@ -42,31 +42,31 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
 
 
 
-def map_other_data_IN(data: pd.DataFrame) -> pd.DataFrame:
-    """
-    map other data in relevant format:
-    keep event_index, true_digit, channel & EEG signal
-    """
+# def map_other_data_IN(data: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     map other data in relevant format:
+#     keep event_index, true_digit, channel & EEG signal
+#     """
 
-    # min_data_points = data.iloc[:,5].min()
-    max_data_points = data.iloc[:,5].max()
+#     # min_data_points = data.iloc[:,5].min()
+#     max_data_points = data.iloc[:,5].max()
 
-    data = data.drop(columns=[0,2,5]) #drop useless columns
+#     data = data.drop(columns=[0,2,5]) #drop useless columns
 
-    data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
-    data = data.reindex(columns=['index_event', 'true_digit', 'channel', 'eeg']) #reorder columns
+#     data.columns = ['index_event', 'channel', 'true_digit', 'eeg'] #rename columns
+#     data = data.reindex(columns=['index_event', 'true_digit', 'channel', 'eeg']) #reorder columns
 
-    #data = pd.concat([data.iloc[:,:3], pd.DataFrame(data.iloc[:,3].apply(lambda x: x.split(',')))], axis=1)
-    data = pd.concat([data.iloc[:,:3], pd.DataFrame(data.iloc[:,3].apply(lambda x: [eval(e) for e in x.split(',')]))], axis=1)
+#     #data = pd.concat([data.iloc[:,:3], pd.DataFrame(data.iloc[:,3].apply(lambda x: x.split(',')))], axis=1)
+#     data = pd.concat([data.iloc[:,:3], pd.DataFrame(data.iloc[:,3].apply(lambda x: [eval(e) for e in x.split(',')]))], axis=1)
 
-    data1 = pd.DataFrame(data.eeg.values.tolist())
-    data = pd.concat([data.drop('eeg',axis=1), data1], axis=1)
+#     data1 = pd.DataFrame(data.eeg.values.tolist())
+#     data = pd.concat([data.drop('eeg',axis=1), data1], axis=1)
 
-    #save in bucket
-    BUCKET_NAME = "brain-mnist"
-    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv', index=False)
+#     #save in bucket
+#     BUCKET_NAME = "brain-mnist"
+#     data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv', index=False)
 
-    return data
+#     return data
 
 
 
