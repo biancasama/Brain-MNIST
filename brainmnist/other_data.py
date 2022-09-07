@@ -178,9 +178,12 @@ if __name__=='__main__':
 
     df = balance_data(df)
     #delete columns only composed of nans (possible if subset of data)
-    tmp = df.isnull().sum(axis=0)
-    cols_nan = int(tmp[tmp==df.shape[0]].index[0])
-    df = df.iloc[:,:(3+cols_nan)]
+    try:
+        tmp = df.isnull().sum(axis=0)
+        cols_nan = int(tmp[tmp==df.shape[0]].index[0])
+        df = df.iloc[:,:(3+cols_nan)]
+    except:
+        pass
     print(df.shape)
     print(df.head())
 
@@ -192,8 +195,11 @@ if __name__=='__main__':
                        pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
     #delete columns only composed of nans (possible if subset of data)
     tmp = notch.isnull().sum(axis=0)
-    cols_nan = int(tmp[tmp==notch.shape[0]].index[0])
-    notch = notch.iloc[:,:(3+cols_nan)]
+    try:
+        cols_nan = int(tmp[tmp==notch.shape[0]].index[0])
+        notch = notch.iloc[:,:(3+cols_nan)]
+    except:
+        pass
     print(notch.shape)
     print(notch.head())
 
@@ -201,8 +207,11 @@ if __name__=='__main__':
                            pd.DataFrame(butter_bandpass_filter(notch.iloc[:,3:], lowcut, highcut, fs, order=2))], axis= 1)
     df_butter = df_butter.replace({np.nan: -1000}) #replace nans by 1000 for paading to come
     tmp = df_butter.isnull().sum(axis=0)
-    cols_nan = int(tmp[tmp==df_butter.shape[0]].index[0])
-    df_butter = df_butter.iloc[:,:(3+cols_nan)]
+    try:
+        cols_nan = int(tmp[tmp==df_butter.shape[0]].index[0])
+        df_butter = df_butter.iloc[:,:(3+cols_nan)]
+    except:
+        pass
     print(df_butter.shape)
     print(df_butter.head())
 
