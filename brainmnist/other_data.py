@@ -159,7 +159,7 @@ if __name__=='__main__':
     #filtering
     fs = 128 #sampling rate
     lowcut = 14 #high-pass filter of sufficient frequency to remove DC offset
-    highcut = 70
+    highcut = 60
     notch = pd.concat([df.iloc[:,:3].reset_index().drop(columns='index'),
                        pd.DataFrame(notch_filter(df.iloc[:,3:], 50, 25, fs))], axis= 1)
     #delete columns only composed of nans (possible if subset of data)
