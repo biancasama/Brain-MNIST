@@ -97,10 +97,10 @@ def map_other_data_array3D(df: pd.DataFrame) -> tuple:
 
     ##save X and y as blobs in bucket
     BUCKET_NAME = "brain-mnist"
-    np.save(f'data/{dataset_name}_filtered_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'data/{dataset_name}_filtered_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
-    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_X.npy', f"other_datasets/{dataset_name}_filtered_X.npy")
-    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_y.npy', f"other_datasets/{dataset_name}_filtered_y.npy")
+    np.save(f'data/{dataset_name}_filtered_cut_X.npy', X, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/{dataset_name}_filtered_cut_y.npy', y, allow_pickle=True, fix_imports=True) #save y locally
+    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_X.npy', f"other_datasets/{dataset_name}_filtered_cut_X.npy")
+    upload_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_cut_y.npy', f"other_datasets/{dataset_name}_filtered_cut_y.npy")
 
     return X, y
 
@@ -184,6 +184,7 @@ if __name__=='__main__':
         df = df.iloc[:,:(3+cols_nan)]
     except:
         pass
+    df = df.iloc[:,:103] #couper abitrairement les séquences
     print(df.shape)
     print(df.head())
 
