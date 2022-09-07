@@ -33,6 +33,10 @@ def map_other_data(data: pd.DataFrame) -> pd.DataFrame:
     data1 = pd.DataFrame(data.eeg.values.tolist())
     data = pd.concat([data.drop('eeg',axis=1), data1], axis=1)
 
+    #save in bucket
+    BUCKET_NAME = "brain-mnist"
+    data.to_csv(f'gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv', index=False)
+
     return data
 
 
@@ -161,10 +165,10 @@ if __name__=='__main__':
 
     dataset_name = 'EP1.01'
 
-    # df = load_other_data()
-    # print(df.shape)
-    # df = map_other_data(df)
-    # print(df.shape)
+    df = load_other_data()
+    print(df.shape)
+    df = map_other_data(df)
+    print(df.shape)
 
     # BUCKET_NAME = "brain-mnist"
     # df = pd.read_csv(f"gs://{BUCKET_NAME}/other_datasets/{dataset_name}_clean.csv")
