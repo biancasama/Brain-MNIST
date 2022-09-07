@@ -167,7 +167,7 @@ def load_model_otherData() -> Model:
     mlflow_model_name = 'mnist_fla66_{dataset_name}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
-    model_uri = f"models:/{mlflow_model_name}/1"
+    model_uri = f"models:/{mlflow_model_name}/6"
 
     model = mlflow.keras.load_model(model_uri=model_uri)
 
@@ -179,7 +179,11 @@ if __name__=='__main__':
     dataset_name = 'EP1.01'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
-    print(X_train.shape)
-    model = initialize_model_RNN_4C_otherData(X_train)
-    model = compile_model_RNN_4C_otherData(model)
-    train_model_RNN_4C_otherData(model, X_train, y_train)
+    # print(X_train.shape)
+    # model = initialize_model_RNN_4C_otherData(X_train)
+    # model = compile_model_RNN_4C_otherData(model)
+    # train_model_RNN_4C_otherData(model, X_train, y_train)
+
+    model = load_model_otherData()
+
+    model.evaluate(X_test, y_test, verbose=0)
