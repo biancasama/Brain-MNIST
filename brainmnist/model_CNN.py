@@ -132,6 +132,8 @@ val_ds = configure_for_performance(val_ds)
 
 def get_model_vgg():
 
+    input_shape = (CONFIG['img_height'], CONFIG['img_width'], CONFIG['n_channels'])
+
     base = VGG16(weights="imagenet",
                   include_top=False, input_shape=input_shape)
 
