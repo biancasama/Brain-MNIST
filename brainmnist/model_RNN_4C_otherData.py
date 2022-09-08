@@ -239,7 +239,7 @@ def evaluate_model_RNN_4C_otherData(model, X_test, y_test):
     np.save(f'results/ytest_{dataset_name}_{detail}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
 
     upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.npy', f"results/conf_matrix_{dataset_name}_{detail}.npy")
-    upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail}.npy', f"results/conf_matrix_all{dataset_name}_{detail}.npy")
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail}.npy', f"results/conf_matrix_all_{dataset_name}_{detail}.npy")
     upload_blob(BUCKET_NAME, f'results/ypred_{dataset_name}_{detail}.npy', f"results/ypred_{dataset_name}_{detail}.npy")
     upload_blob(BUCKET_NAME, f'results/ytest_{dataset_name}_{detail}.npy', f"results/ytest_{dataset_name}_{detail}.npy")
 
@@ -254,10 +254,10 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}'#_{detail}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
-    model_uri = f"models:/{mlflow_model_name}/6"
+    model_uri = f"models:/{mlflow_model_name}/4"
 
     model = mlflow.keras.load_model(model_uri=model_uri)
 
