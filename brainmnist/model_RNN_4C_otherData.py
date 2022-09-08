@@ -250,7 +250,7 @@ if __name__=='__main__':
 
     y_pred = np.argmax(predicted_probabilities, axis = 1)
     print(y_pred)
-    print(np.argmax(y_test))
+    print(y_test.apply(np.argmax))
 
     matrix_conf = sklearn.metrics.confusion_matrix(np.argmax(y_test), y_pred)
     print(matrix_conf)
