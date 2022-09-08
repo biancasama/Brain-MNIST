@@ -169,7 +169,7 @@ def plot_loss_accuracy(history):
 def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
-    batch_size = 32
+    batch_size = 128
     patience = 20
     epochs = 500
 
@@ -229,7 +229,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
+    mlflow_model_name = f'mnist_biancasama_{dataset_name}_{detail}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/6"
