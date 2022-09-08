@@ -1,4 +1,5 @@
 #tensorflow
+from re import A
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras import layers, Model, models
 from tensorflow.keras.layers import Normalization
@@ -227,10 +228,21 @@ def evaluate_model_RNN_4C_otherData(model, X_test, y_test):
     matrix_conf = sklearn.metrics.confusion_matrix(y_test, y_pred)
     print(matrix_conf)
 
-    sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
+    matrix_conf_all = sklearn.metrics.confusion_matrix(y_test, y_pred, normalize=all)
+    print(matrix_conf_all)
+
+    # sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
 
     BUCKET_NAME = "brain-mnist"
-    upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.png', f"results/conf_matrix_{dataset_name}_{detail}.png")
+    np.save(f'data/conf_matrix_{dataset_name}_{detail}.npy', matrix_conf, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/conf_matrix_all_{dataset_name}_{detail}.npy', matrix_conf_all, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'data/ypred_{dataset_name}_{detail}.npy', y_pred, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'data/ytest_{dataset_name}_{detail}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
+
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.npy', f"results/conf_matrix_{dataset_name}_{detail}.npy")
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail}.npy', f"results/conf_matrix_all{dataset_name}_{detail}.npy")
+    upload_blob(BUCKET_NAME, f'results/ypred_{dataset_name}_{detail}.npy', f"results/ypred_{dataset_name}_{detail}.npy")
+    upload_blob(BUCKET_NAME, f'results/ytest_{dataset_name}_{detail}.npy', f"results/ytest_{dataset_name}_{detail}.npy")
 
     return matrix_conf
 
