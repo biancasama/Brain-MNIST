@@ -218,7 +218,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}'#_{detail}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/6"
@@ -230,22 +230,16 @@ def load_model_otherData() -> Model:
 
 if __name__=='__main__':
 
-    # dataset_name = 'EP1.01'
-    # detail = 'cut_128Hz'
-
     dataset_name = 'EP1.01'
     detail = 'cut'
 
-    # dataset_name = 'EP1.01'
-    # detail = 'nofilter'
-
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
-    model = initialize_model_RNN_4C_otherData(X_train)
-    model = compile_model_RNN_4C_otherData(model)
-    train_model_RNN_4C_otherData(model, X_train, y_train)
+    # model = initialize_model_RNN_4C_otherData(X_train)
+    # model = compile_model_RNN_4C_otherData(model)
+    # train_model_RNN_4C_otherData(model, X_train, y_train)
 
-    # model = load_model_otherData()
+    model = load_model_otherData()
 
-    # res = model.evaluate(X_test, y_test, verbose=0)
-    # print(res)
+    res = model.evaluate(X_test, y_test, verbose=0)
+    print(res)

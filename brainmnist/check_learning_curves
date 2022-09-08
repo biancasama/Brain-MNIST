@@ -1,16 +1,40 @@
-import numpy as np
-from google.cloud import storage
+# import numpy as np
+# from google.cloud import storage
 
-def download_blob(bucket_name, source_file_name, destination_blob_name):
-    """Uploads a file to the bucket."""
+# def download_blob(bucket_name, source_file_name, destination_blob_name):
+#     """Uploads a file to the bucket."""
 
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
+#     storage_client = storage.Client()
+#     bucket = storage_client.bucket(bucket_name)
+#     blob = bucket.blob(destination_blob_name)
 
-    blob.download_to_filename(source_file_name)
+#     blob.download_to_filename(source_file_name)
 
-BUCKET_NAME = "brain-mnist"
+# BUCKET_NAME = "brain-mnist"
 # download_blob(BUCKET_NAME, f'results/CNN_bianca.png', f"results/CNN_bianca.png")
 
-download_blob(BUCKET_NAME, f'results/AF7_10002_7.npy', f"data/seven/AF7_10002_7.npy")
+
+
+def load_model_otherData() -> Model:
+    """
+    load a saved model, return None if no model found
+    """
+    # stage = "Production"
+
+    # load model from mlflow
+    mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}'#_{detail}'
+
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    model_uri = f"models:/{mlflow_model_name}/6"
+
+    model = mlflow.keras.load_model(model_uri=model_uri)
+
+    return model
+
+
+
+ # model = load_model_otherData()
+
+    # res = model.evaluate(X_test, y_test, verbose=0)
+    # print(res)
