@@ -168,7 +168,7 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
                        restore_best_weights=True,
                        verbose=0)
 
-    chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
+    chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint_{dataset_name}_{detail}',
                             save_weights_only=True,
                             save_best_only=True,
                             monitor='val_loss',
@@ -264,6 +264,6 @@ if __name__=='__main__':
     # model = compile_model_RNN_4C_otherData(model)
     # train_model_RNN_4C_otherData(model, X_train, y_train)
 
-    # model = load_model_otherData()
+    model = load_model_otherData()
 
     model.evaluate_model_RNN_4C_otherData()
