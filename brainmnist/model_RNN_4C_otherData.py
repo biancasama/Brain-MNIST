@@ -234,7 +234,7 @@ if __name__=='__main__':
     # detail = 'cut_128Hz'
 
     dataset_name = 'EP1.01'
-    detail = 'cut_47'
+    detail = 'cut'
 
     # dataset_name = 'EP1.01'
     # detail = 'nofilter'
