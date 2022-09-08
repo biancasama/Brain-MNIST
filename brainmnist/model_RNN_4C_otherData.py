@@ -233,11 +233,11 @@ if __name__=='__main__':
     # dataset_name = 'EP1.01'
     # detail = 'cut_128Hz'
 
-    # dataset_name = 'EP1.01'
-    # detail = 'cut_47'
-
     dataset_name = 'EP1.01'
-    detail = 'nofilter'
+    detail = 'cut_47'
+
+    # dataset_name = 'EP1.01'
+    # detail = 'nofilter'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
