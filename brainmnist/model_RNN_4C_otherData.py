@@ -23,6 +23,7 @@ from google.cloud import storage
 from data import load_clean_data_from_bucket, balance_data, map_data_array3D
 from other_data import download_blob, upload_blob
 import matplotlib.pyplot as plt
+import sklearn
 
 
 def prepare_for_RNN_4C_otherData():
@@ -243,3 +244,7 @@ if __name__=='__main__':
 
     res = model.evaluate(X_test, y_test, verbose=0)
     print(res)
+
+    prediction = model.predict(X_test)
+
+    sklearn.metrics.confusion_matrix(y_test, prediction)
