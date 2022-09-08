@@ -252,7 +252,7 @@ if __name__=='__main__':
     print(y_pred)
     print(y_test.apply(np.argmax))
 
-    matrix_conf = sklearn.metrics.confusion_matrix(np.argmax(y_test), y_pred)
+    matrix_conf = sklearn.metrics.confusion_matrix(y_test.apply(np.argmax), y_pred)
     print(matrix_conf)
 
     sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
