@@ -158,7 +158,7 @@ def plot_loss_accuracy(history):
 def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
-    batch_size = 128
+    batch_size = 256
     patience = 20
     epochs = 500
 
@@ -233,8 +233,11 @@ if __name__=='__main__':
     # dataset_name = 'EP1.01'
     # detail = 'cut_128Hz'
 
+    # dataset_name = 'EP1.01'
+    # detail = 'cut_47'
+
     dataset_name = 'EP1.01'
-    detail = 'cut'
+    detail = 'nofilter'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
