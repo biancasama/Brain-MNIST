@@ -198,7 +198,7 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     ### plot learning curves ###
     fig = plot_loss_accuracy(history)
-    fig.savefig("results/RNN_{dataset_name}_{detail}.png")
+    # fig.savefig("results/RNN_{dataset_name}_{detail}.png")
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"

@@ -11,4 +11,6 @@ def download_blob(bucket_name, source_file_name, destination_blob_name):
     blob.download_to_filename(source_file_name)
 
 BUCKET_NAME = "brain-mnist"
-download_blob(BUCKET_NAME, f'results/CNN_bianca.png', f"results/CNN_bianca.png")
+# download_blob(BUCKET_NAME, f'results/CNN_bianca.png', f"results/CNN_bianca.png")
+
+download_blob(BUCKET_NAME, f'results/AF7_10002_7.npy', f"data/seven/AF7_10002_7.npy")
