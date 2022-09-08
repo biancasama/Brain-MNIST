@@ -200,7 +200,6 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     ### plot learning curves ###
     fig = plot_loss_accuracy(history)
-    # fig.savefig("results/RNN_{dataset_name}_{detail}.png")
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
@@ -228,7 +227,7 @@ def evaluate_model_RNN_4C_otherData(model, X_test, y_test):
     matrix_conf = sklearn.metrics.confusion_matrix(y_test, y_pred)
     print(matrix_conf)
 
-    matrix_conf_all = sklearn.metrics.confusion_matrix(y_test, y_pred, normalize=all)
+    matrix_conf_all = sklearn.metrics.confusion_matrix(y_test, y_pred, normalize='all')
     print(matrix_conf_all)
 
     # sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
