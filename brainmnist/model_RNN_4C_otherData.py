@@ -233,10 +233,10 @@ def evaluate_model_RNN_4C_otherData(model, X_test, y_test):
     # sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
 
     BUCKET_NAME = "brain-mnist"
-    np.save(f'data/conf_matrix_{dataset_name}_{detail}.npy', matrix_conf, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'data/conf_matrix_all_{dataset_name}_{detail}.npy', matrix_conf_all, allow_pickle=True, fix_imports=True) #save y locally
-    np.save(f'data/ypred_{dataset_name}_{detail}.npy', y_pred, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'data/ytest_{dataset_name}_{detail}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'results/conf_matrix_{dataset_name}_{detail}.npy', matrix_conf, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'results/conf_matrix_all_{dataset_name}_{detail}.npy', matrix_conf_all, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'results/ypred_{dataset_name}_{detail}.npy', y_pred, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'results/ytest_{dataset_name}_{detail}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
 
     upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.npy', f"results/conf_matrix_{dataset_name}_{detail}.npy")
     upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail}.npy', f"results/conf_matrix_all{dataset_name}_{detail}.npy")
