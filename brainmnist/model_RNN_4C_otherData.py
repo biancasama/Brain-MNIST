@@ -33,6 +33,8 @@ def prepare_for_RNN_4C_otherData():
     download_blob(BUCKET_NAME, f'data/{dataset_name}_filtered_{detail}_y.npy', f"other_datasets/{dataset_name}_filtered_{detail}_y.npy")
     X = np.load(f'data/{dataset_name}_filtered_{detail}_X.npy', allow_pickle=True, fix_imports=True)
     y = np.load(f'data/{dataset_name}_filtered_{detail}_y.npy', allow_pickle=True, fix_imports=True)
+    print(X.shape)
+    print(y.shape)
 
     #pad data
     X_pad = pad_sequences(X, dtype='float32', padding='post', value=-1000)  # int32 by default, default value=0
@@ -228,8 +230,11 @@ def load_model_otherData() -> Model:
 
 if __name__=='__main__':
 
+    # dataset_name = 'EP1.01'
+    # detail = 'cut_128Hz'
+
     dataset_name = 'EP1.01'
-    detail = 'cut_128Hz'
+    detail = 'cut'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
