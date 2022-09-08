@@ -245,6 +245,16 @@ if __name__=='__main__':
     res = model.evaluate(X_test, y_test, verbose=0)
     print(res)
 
-    prediction = model.predict(X_test)
+    predicted_probabilities = model.predict(X_test)
+    print(predicted_probabilities)
 
-    sklearn.metrics.confusion_matrix(y_test, prediction)
+    y_pred = np.argmax(predicted_probabilities, axis = 1)
+    print(y_pred)
+
+    matrix_conf = sklearn.metrics.confusion_matrix(y_test, y_pred)
+    print(matrix_conf)
+
+    sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
+
+    BUCKET_NAME = "brain-mnist"
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.png', f"results/conf_matrix_{dataset_name}_{detail}.png")
