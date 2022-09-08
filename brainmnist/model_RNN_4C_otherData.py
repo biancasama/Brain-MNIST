@@ -158,7 +158,7 @@ def plot_loss_accuracy(history):
 def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     # model params
-    batch_size = 32
+    batch_size = 128
     patience = 20
     epochs = 500
 
