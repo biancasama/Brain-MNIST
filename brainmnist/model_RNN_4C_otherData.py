@@ -203,7 +203,7 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    fig.savefig("results/RNN_{dataset_name}_{detail}.png") #save png locally
+    fig.savefig(f"results/RNN_{dataset_name}_{detail}.png") #save png locally
     upload_blob(BUCKET_NAME, f'results/RNN_{dataset_name}_{detail}.png', f"results/RNN_{dataset_name}_{detail}.png")
 
     return val_accuracy
@@ -250,6 +250,7 @@ if __name__=='__main__':
 
     y_pred = np.argmax(predicted_probabilities, axis = 1)
     print(y_pred)
+    print(y_test)
 
     matrix_conf = sklearn.metrics.confusion_matrix(y_test, y_pred)
     print(matrix_conf)
