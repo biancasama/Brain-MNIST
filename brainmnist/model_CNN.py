@@ -219,111 +219,111 @@ def compile_model(model):
 model = get_model_vgg()
 model.summary()
 
-model = compile_model(model)
+# model = compile_model(model)
 
-# model.load_weights(f'checkpoints/model_checkpoint')
+# # model.load_weights(f'checkpoints/model_checkpoint')
 
-patience=20
-epochs=500
-es = EarlyStopping(patience=patience,
-                   restore_best_weights=True)
+# patience=20
+# epochs=500
+# es = EarlyStopping(patience=patience,
+#                    restore_best_weights=True)
 
-chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
-                        save_weights_only=True,
-                        save_best_only=True,
-                        monitor='val_loss',
-                        mode='min')
+# chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint',
+#                         save_weights_only=True,
+#                         save_best_only=True,
+#                         monitor='val_loss',
+#                         mode='min')
 
-history = model.fit(train_ds,
-                    validation_data=val_ds,
-                    callbacks = [es,chkpt],
-                    epochs=epochs)
-# return the last value of the validation accuracy
-val_accuracy = history.history['val_accuracy'][-1]
-
-
-
-### save results to mlflow ###
-
-params = dict(
-    train_accuracy=np.min(history.history['accuracy']),
-    val_accuracy=np.min(history.history['val_accuracy']),
-    CONFIG=CONFIG,
-    patience=patience,
-    epochs=epochs
-)
-
-def save_model_CNN(model: Model = None,
-                   params: dict = None,
-                   metrics: dict = None) -> None:
-
-    mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_experiment = 'mnist_experiment_fla66_CNN'
-    mlflow_model_name = 'mnist_fla66_CNN'
-
-    # configure mlflow
-    mlflow.set_tracking_uri(mlflow_tracking_uri)
-    mlflow.set_experiment(experiment_name=mlflow_experiment)
-
-    with mlflow.start_run():
-
-        # STEP 1: push parameters to mlflow
-        mlflow.log_params(params)
-
-        # STEP 2: push metrics to mlflow
-        mlflow.log_metrics(metrics)
-
-        # STEP 3: push model to mlflow
-        if model is not None:
-            mlflow.keras.log_model(keras_model=model,
-                                    artifact_path="model",
-                                    keras_module="tensorflow.keras",
-                                    registered_model_name=mlflow_model_name)
-
-    return None
-
-# save model
-save_model_CNN(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
+# history = model.fit(train_ds,
+#                     validation_data=val_ds,
+#                     callbacks = [es,chkpt],
+#                     epochs=epochs)
+# # return the last value of the validation accuracy
+# val_accuracy = history.history['val_accuracy'][-1]
 
 
-### plot learning curves ###
 
-def plot_loss_accuracy(history):
-    with plt.style.context('seaborn-deep'):
+# ### save results to mlflow ###
 
-        fig, ax = plt.subplots(1, 2, figsize=(15, 4))
+# params = dict(
+#     train_accuracy=np.min(history.history['accuracy']),
+#     val_accuracy=np.min(history.history['val_accuracy']),
+#     CONFIG=CONFIG,
+#     patience=patience,
+#     epochs=epochs
+# )
 
-        ## Plot Losses and Accuracies
-        x_axis = np.arange(len(history.history['loss']))
+# def save_model_CNN(model: Model = None,
+#                    params: dict = None,
+#                    metrics: dict = None) -> None:
 
-        ax[0].set_title("Loss")
-        ax[0].plot(x_axis, history.history['loss'], color="blue", linestyle=":", marker="X", label="Train Loss")
-        ax[0].plot(x_axis, history.history['val_loss'], color="orange", linestyle="-", marker="X", label="Val Loss")
+#     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
+#     mlflow_experiment = 'mnist_experiment_fla66_CNN'
+#     mlflow_model_name = 'mnist_fla66_CNN'
 
-        ax[1].set_title("Accuracy")
-        ax[1].plot(x_axis, history.history['accuracy'], color="blue", linestyle=":", marker="X", label="Train Accuracy")
-        ax[1].plot(x_axis,
-                   history.history['val_accuracy'],
-                   color="orange",
-                   linestyle="-",
-                   marker="X",
-                   label="Val Accuracy")
+#     # configure mlflow
+#     mlflow.set_tracking_uri(mlflow_tracking_uri)
+#     mlflow.set_experiment(experiment_name=mlflow_experiment)
 
-        ## Customization
-        ax[0].grid(axis="x", linewidth=0.5)
-        ax[0].grid(axis="y", linewidth=0.5)
-        ax[0].legend()
-        ax[1].grid(axis="x", linewidth=0.5)
-        ax[1].grid(axis="y", linewidth=0.5)
-        ax[1].legend()
+#     with mlflow.start_run():
 
-        return fig
+#         # STEP 1: push parameters to mlflow
+#         mlflow.log_params(params)
+
+#         # STEP 2: push metrics to mlflow
+#         mlflow.log_metrics(metrics)
+
+#         # STEP 3: push model to mlflow
+#         if model is not None:
+#             mlflow.keras.log_model(keras_model=model,
+#                                     artifact_path="model",
+#                                     keras_module="tensorflow.keras",
+#                                     registered_model_name=mlflow_model_name)
+
+#     return None
+
+# # save model
+# save_model_CNN(model=model, params=params, metrics=dict(val_accuracy=val_accuracy))
 
 
-fig = plot_loss_accuracy(history)
-fig.savefig("results/CNN.png")
+# ### plot learning curves ###
 
-#save in bucket
-BUCKET_NAME = "brain-mnist"
-fig.savefig("results/CNN.png") #save png locally
-upload_blob(BUCKET_NAME, f'results/CNN.png', f"results/CNN.png")
+# def plot_loss_accuracy(history):
+#     with plt.style.context('seaborn-deep'):
+
+#         fig, ax = plt.subplots(1, 2, figsize=(15, 4))
+
+#         ## Plot Losses and Accuracies
+#         x_axis = np.arange(len(history.history['loss']))
+
+#         ax[0].set_title("Loss")
+#         ax[0].plot(x_axis, history.history['loss'], color="blue", linestyle=":", marker="X", label="Train Loss")
+#         ax[0].plot(x_axis, history.history['val_loss'], color="orange", linestyle="-", marker="X", label="Val Loss")
+
+#         ax[1].set_title("Accuracy")
+#         ax[1].plot(x_axis, history.history['accuracy'], color="blue", linestyle=":", marker="X", label="Train Accuracy")
+#         ax[1].plot(x_axis,
+#                    history.history['val_accuracy'],
+#                    color="orange",
+#                    linestyle="-",
+#                    marker="X",
+#                    label="Val Accuracy")
+
+#         ## Customization
+#         ax[0].grid(axis="x", linewidth=0.5)
+#         ax[0].grid(axis="y", linewidth=0.5)
+#         ax[0].legend()
+#         ax[1].grid(axis="x", linewidth=0.5)
+#         ax[1].grid(axis="y", linewidth=0.5)
+#         ax[1].legend()
+
+#         return fig
+
+
+# fig = plot_loss_accuracy(history)
+# fig.savefig("results/CNN.png")
+
+# #save in bucket
+# BUCKET_NAME = "brain-mnist"
+# fig.savefig("results/CNN.png") #save png locally
+# upload_blob(BUCKET_NAME, f'results/CNN.png', f"results/CNN.png")
