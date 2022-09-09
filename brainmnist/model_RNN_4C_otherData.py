@@ -96,8 +96,8 @@ def save_model_RNN_4C_otherData(model: Model = None,
     # mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
 
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_experiment = f'mnist_experiment_fla66_{dataset_name}_{detail}'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
+    mlflow_experiment = f'mnist_experiment_fla66_{dataset_name}_{detail2}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail2}'
 
     # configure mlflow
     mlflow.set_tracking_uri(mlflow_tracking_uri)
@@ -169,7 +169,7 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
                        restore_best_weights=True,
                        verbose=0)
 
-    chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint_{dataset_name}_{detail}',
+    chkpt = ModelCheckpoint(filepath=f'checkpoints/model_checkpoint_{dataset_name}_{detail2}',
                             save_weights_only=True,
                             save_best_only=True,
                             monitor='val_loss',
@@ -203,8 +203,8 @@ def train_model_RNN_4C_otherData(model, X_train, y_train):
 
     #save in bucket
     BUCKET_NAME = "brain-mnist"
-    fig.savefig(f"results/RNN_{dataset_name}_{detail}.png") #save png locally
-    upload_blob(BUCKET_NAME, f'results/RNN_{dataset_name}_{detail}.png', f"results/RNN_{dataset_name}_{detail}.png")
+    fig.savefig(f"results/RNN_{dataset_name}_{detail2}.png") #save png locally
+    upload_blob(BUCKET_NAME, f'results/RNN_{dataset_name}_{detail2}.png', f"results/RNN_{dataset_name}_{detail2}.png")
 
     return val_accuracy
 
@@ -233,15 +233,17 @@ def evaluate_model_RNN_4C_otherData(model, X_test, y_test):
     # sklearn.metrics.ConfusionMatrixDisplay(matrix_conf).savefig(f"results/conf_matrix_{dataset_name}_{detail}.png")
 
     BUCKET_NAME = "brain-mnist"
-    np.save(f'results/conf_matrix_{dataset_name}_{detail}.npy', matrix_conf, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'results/conf_matrix_all_{dataset_name}_{detail}.npy', matrix_conf_all, allow_pickle=True, fix_imports=True) #save y locally
-    np.save(f'results/ypred_{dataset_name}_{detail}.npy', y_pred, allow_pickle=True, fix_imports=True) #save X locally
-    np.save(f'results/ytest_{dataset_name}_{detail}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'results/res_{dataset_name}_{detail2}.npy', res, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'results/conf_matrix_{dataset_name}_{detail2}.npy', matrix_conf, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'results/conf_matrix_all_{dataset_name}_{detail2}.npy', matrix_conf_all, allow_pickle=True, fix_imports=True) #save y locally
+    np.save(f'results/ypred_{dataset_name}_{detail2}.npy', y_pred, allow_pickle=True, fix_imports=True) #save X locally
+    np.save(f'results/ytest_{dataset_name}_{detail2}.npy', y_test, allow_pickle=True, fix_imports=True) #save y locally
 
-    upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail}.npy', f"results/conf_matrix_{dataset_name}_{detail}.npy")
-    upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail}.npy', f"results/conf_matrix_all_{dataset_name}_{detail}.npy")
-    upload_blob(BUCKET_NAME, f'results/ypred_{dataset_name}_{detail}.npy', f"results/ypred_{dataset_name}_{detail}.npy")
-    upload_blob(BUCKET_NAME, f'results/ytest_{dataset_name}_{detail}.npy', f"results/ytest_{dataset_name}_{detail}.npy")
+    upload_blob(BUCKET_NAME, f'results/res_{dataset_name}_{detail2}.npy', f"results/res_{dataset_name}_{detail2}.npy")
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_{dataset_name}_{detail2}.npy', f"results/conf_matrix_{dataset_name}_{detail2}.npy")
+    upload_blob(BUCKET_NAME, f'results/conf_matrix_all_{dataset_name}_{detail2}.npy', f"results/conf_matrix_all_{dataset_name}_{detail2}.npy")
+    upload_blob(BUCKET_NAME, f'results/ypred_{dataset_name}_{detail2}.npy', f"results/ypred_{dataset_name}_{detail2}.npy")
+    upload_blob(BUCKET_NAME, f'results/ytest_{dataset_name}_{detail2}.npy', f"results/ytest_{dataset_name}_{detail2}.npy")
 
     return matrix_conf
 
@@ -254,7 +256,7 @@ def load_model_otherData() -> Model:
 
     # load model from mlflow
     mlflow_tracking_uri = 'https://mlflow.lewagon.ai'
-    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail}'
+    mlflow_model_name = f'mnist_fla66_{dataset_name}_{detail2}'
 
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     model_uri = f"models:/{mlflow_model_name}/4"
@@ -266,8 +268,17 @@ def load_model_otherData() -> Model:
 
 if __name__=='__main__':
 
+    from datetime import datetime
+
+    # Getting the current date and time
+    dt = datetime.now()
+
+    # getting the timestamp
+    ts = datetime.timestamp(dt)
+
     dataset_name = 'EP1.01'
-    detail = 'cut'
+    detail = f'cut'
+    detail2 = f'cut_{ts}'
 
     X_train, X_test, y_train, y_test = prepare_for_RNN_4C_otherData()
     print(X_train.shape)
