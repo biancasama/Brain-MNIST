@@ -216,7 +216,7 @@ def compile_model(model):
     return model
 
 
-model = get_model_vgg()
+model = get_model_vanilla()
 model.summary()
 
 # model = compile_model(model)
