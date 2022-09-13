@@ -71,6 +71,8 @@ def initialize_model_RNN_4C_otherData(X_train):
     model.add(layers.Dense(50, activation="relu"))
     model.add(layers.Dense(11, activation="softmax"))
     # model.add(layers.Dense(10, activation="softmax"))
+    #
+    model.summary()
 
     return model
 
